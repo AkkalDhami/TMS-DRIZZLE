@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <%- include('../partials/head') %>
+</head>
+
+<body data-theme="light" class="h-full font-monts bg-primary transition-colors duration-200">
+    <%- include('../partials/nav') %>
+        <%- include('../partials/sidebar') %>
+            <%- include('../partials/loader') %>
+
+
+
+                <!-- main section -->
+                <main id="main-content" class="pt-24 mb-19
+             text-dark px-4 transition-all duration-300 md:ml-[270px]">
+
+                    <div class="flex items-center justify-between mb-3">
+                        <h1 class="text-3xl font-bold">Task Details</h1>
+                    </div>
+
+                    <div id="taskCardContainer">
+
+                    </div>
+
+
+                </main>
+
+
+
+                <script type="module" src="/javascripts/pages/task-details.js"></script>
+                <%- include('../partials/utiljs') %>
+</body>
+
+</html>

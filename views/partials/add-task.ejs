@@ -1,0 +1,139 @@
+<div id="taskModal"
+    class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all z-50">
+    <div class="bg-primary max-h-[600px] overflow-y-auto no-scrollbar p-3 sm:p-6 rounded-lg shadow-2xl w-full max-w-4xl">
+        <form id="toDoForm">
+            <div>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold mb-4">Add New Task</h2>
+                    <button type="button"
+                        class="closeTaskModal text-2xl hover:bg-zinc-500/10 transition-colors px-2 py-1 rounded-md"><i
+                            class="ri-close-fill"></i></button>
+                </div>
+                <p class="my-4 text-gray font-normal text-base">
+                    Fields marked with <span class="text-red-500">*</span> are required
+                </p>
+
+                <div class="backdrop-blur-[20px]">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="flex flex-col gap-1">
+                            <label for="categorySelect" class="block text-sm font-medium text-dark mb-1">Select Category
+                                <span class="text-red-500">*</span> </label>
+                            <select id="categorySelect" name="category"
+                                class="p-3 bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="work">Work</option>
+                                <option value="personal">Personal</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="health">Health</option>
+                                <option value="education">Education</option>
+                                <option value="travel">Travel</option>
+                                <option value="finance">Finance</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="other">Others</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="prioritySelect" class="block text-sm font-medium text-dark mb-1">Select
+                                Priority <span class="text-red-500">*</span></label>
+                            <select id="prioritySelect" name="priority"
+                                class="p-3 focus:outline-none bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg">
+                                <option value="" disabled selected>Select Priority</option>
+                                <option value="high" class="text-red-500">High</option>
+                                <option value="medium" class="text-blue-500">Medium</option>
+                                <option value="low" class="text-orange-500">Low</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="startDateInput" class="block text-sm font-medium text-dark mb-1">Start
+                                Date <span class="text-red-500">*</span></label>
+
+                            <input type="datetime-local" name="startDate" id="startDateInput"
+                                placeholder="Starting Date"
+                                class="p-3 bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg text-dark" />
+                        </div>
+
+                        <div class="flex flex-col gap-1">
+                            <label for="dueDateInput" class="block text-sm font-medium text-dark mb-1">Due
+                                Date <span class="text-red-500">*</span></label>
+
+                            <input type="datetime-local" name="dueDate" id="dueDateInput" placeholder="Due Date"
+                                class="p-3 bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg text-dark" />
+                        </div>
+
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+                        <div class="flex-col sm:col-span-2 flex gap-2 relative">
+                            <label for="taskInput" class="block text-sm font-medium text-dark mb-1">Task
+                                Title <span class="text-red-500">*</span></label>
+                            <input type="text" name="title" id="taskInput" placeholder="Enter your task title here..."
+                                class="p-3 pr-8 bg-transparent text-dark rounded-lg border border-zinc-500/30 outline-none focus:border-orange-500" />
+                            <div onclick="speak('taskInput')"
+                                class="absolute right-3 text-xl top-[50px] cursor-pointer hover:text-orange-500 text-zinc">
+                                <i class="ri-mic-ai-line"></i>
+                            </div>
+                        </div>
+                        <div class="flex-col flex gap-1">
+                            <label for="repeatSelect" class="block text-sm font-medium text-dark mb-1">Set
+                                Repeat </label>
+                            <select id="repeatSelect" name="repeat"
+                                class="p-3 bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg">
+                                <option value="" disabled selected>Select Repeat</option>
+                                <option value="none" class="text-red-500">No Repeat</option>
+                                <option value="daily" class="text-blue-500">Daily</option>
+                                <option value="weekly" class="text-orange-500">Weekly</option>
+                                <option value="monthly" class="text-green-500">
+                                    Monthly
+                                </option>
+                                <option value="yearly" class="text-pink-500">Yearly</option>
+                            </select>
+                        </div>
+                        <div class="flex-col flex gap-2">
+                            <label for="remainderSelect" class="block text-sm font-medium text-dark mb-1">Set
+                                Reminder </label>
+                            <select id="remainderSelect" name="remainder"
+                                class="p-3 bg-primary border border-zinc-500/30 outline-none focus:border-orange-500 rounded-lg">
+                                <option value="" disabled selected>Select Reminder</option>
+                                <option value="0">No Reminder</option>
+                                <option value="15">15 minutes before</option>
+                                <option value="30">30 minutes before</option>
+                                <option value="45">45 minutes before</option>
+                                <option value="60">1 hour before</option>
+                                <option value="300">5 hours before</option>
+                                <option value="1440">1 day before</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- task description -->
+                    <div class="grid grid-cols-1  gap-4 mt-4">
+                        <div class="flex-col flex gap-2 relative">
+                            <label for="taskDescription" class="block text-sm font-medium text-dark mb-1">Task
+                                Description <span class="text-red-500">*</span></label>
+                            <textarea id="taskDescription" rows="4" name="description"
+                                placeholder="Enter your task description here..."
+                                class="p-3 bg-transparent text-dark  h-full resize-none rounded-lg border border-zinc-500/30 outline-none pr-7 focus:border-orange-500"></textarea>
+                            <div onclick="speak('taskDescription')"
+                                class="absolute right-3 text-xl top-[50px] cursor-pointer hover:text-orange-500 text-zinc">
+                                <i class="ri-mic-ai-line"></i>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="justify-end mt-4 flex gap-2">
+                        <button type="submit" id="addTaskBtn"
+                            class="p-3 bg-orange-500 cursor-pointer text-white rounded-lg hover:bg-orange-600 transition-colors">
+                            <i class="fa-solid fa-plus"></i> &nbsp;
+                            Add New Task
+                        </button>
+                        <button type="button"
+                            class="closeTaskModal p-3 bg-zinc-500 cursor-pointer text-white rounded-lg hover:bg-zinc-600 transition-colors">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('../partials/head') %>
+</head>
+
+<body class="font-medium">
+    <%- include('../partials/nav') %>
+        <main class="flex pt-28 items-center mb-10 justify-center w-full">
+            <div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+                <!-- Profile Header -->
+                <div class="bg-indigo-600 p-8 text-white">
+                    <div class="flex flex-col sm:flex-row items-center gap-6">
+                        <% if (user.avatarUrl) { %>
+                            <img src="<%= user.avatarUrl %>" alt="avatar" class="w-16 h-16 rounded-full">
+                            <% } else { %>
+                                <div
+                                    class="bg-zinc-50 border-2 p-4 rounded-full w-16 h-16 flex text-indigo-500 text-xl font-bold items-center justify-center">
+                                    <%= user.name?.charAt(0)?.toUpperCase() %>
+                                </div>
+                                <% } %>
+                                    <div class="text-center sm:text-left">
+                                        <h1 class="text-xl md:text-2xl font-semibold">
+                                            <%= user.name %>
+                                        </h1>
+                                        <div class="mt-2 flex flex-col sm:flex-row sm:items-center gap-4">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-envelope mr-2 text-indigo-200"></i>
+                                                <span>
+                                                    <%= user.email %>
+                                                </span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar-alt mr-2 text-indigo-200"></i>
+                                                <span>Member since <%=
+                                                        user?.createdAt.toLocaleDateString("en-US",{year:"numeric",weekday:"short"
+                                                        ,month:"short",day:"numeric"}) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                    </div>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="p-8 border-b border-zinc-500/30">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      
+                        <div class="bg-indigo-50 rounded-xl p-4 text-center border border-indigo-100">
+                            <div class="text-indigo-800 font-bold text-3xl">0</div>
+                            <div class="text-zinc-600 mt-1">TOTAL CLICKS</div>
+                        </div>
+                        <div class="bg-indigo-50 rounded-xl p-4 text-center border border-indigo-100">
+                            <div class="text-indigo-800 font-bold text-3xl">Today</div>
+                            <div class="text-zinc-600 mt-1">LAST ACTIVE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification Section -->
+                <div class="p-8 border-b border-zinc-500/30">
+                    <h2 class="text-lg font-semibold text-zinc-800 mb-4">Email Verification</h2>
+                    <% if (!user.isEmailValid) { %>
+                        <div id="verificationStatus"
+                            class="flex items-center justify-between bg-red-50 p-4 rounded-lg border border-red-200">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-3 text-xl"></i>
+                                <div>
+                                    <p class="font-medium text-red-700">Not Verified</p>
+                                    <p class="text-sm text-red-600 mt-1">Verify your email to access all features</p>
+                                </div>
+                            </div>
+                            <a href="/auth/verify-email"
+                                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
+                                Verify Now
+                            </a>
+                        </div>
+                        <% } else { %>
+                            <div id="verificationStatus"
+                                class="flex items-center justify-between bg-green-50 p-4 rounded-lg border border-green-200">
+
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-3 text-xl"></i>
+                                    <div>
+                                        <p class="font-medium text-green-700">Verified</p>
+                                        <p class="text-sm text-green-600 mt-1">Your email is verified</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="p-8">
+                    <h2 class="text-lg font-semibold text-zinc-800 mb-4">Account Settings</h2>
+                    <div class="grid font-medium grid-cols-1 sm:grid-cols-3 gap-4">
+                        <button onclick="window.location.href='/auth/edit-profile/<%= user.id %>'"
+                            class="w-full flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition duration-200">
+                            <div class="flex items-center">
+                                <i class="fas fa-user-edit text-indigo-600 mr-3"></i>
+                                <span>Edit Profile</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-zinc-400"></i>
+                        </button>
+                        <% if (hasPassword) { %>
+                            <button onclick="window.location.href='/auth/change-password'"
+                                class="w-full flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition duration-200">
+                                <div class="flex items-center">
+                                    <i class="fas fa-key text-indigo-600 mr-3"></i>
+                                    <span>Change Password</span>
+                                </div>
+                                <i class="fas fa-chevron-right text-zinc-400"></i>
+                            </button>
+
+                            <% } else { %>
+                                <button onclick="window.location.href='/auth/set-password'"
+                                    class="w-full flex items-center justify-between p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition duration-200">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-key text-indigo-600 mr-3"></i>
+                                        <span>Set Password</span>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-zinc-400"></i>
+                                </button>
+                                <% } %>
+                                    <button id="logoutBtn" onclick="window.location.href='/auth/logout'"
+                                        class="w-full flex items-center justify-between p-4 bg-red-50 hover:bg-red-100 rounded-lg transition duration-200">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-sign-out-alt text-red-600 mr-3"></i>
+                                            <span class="text-red-700">Logout</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right text-red-400"></i>
+                                    </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+</body>
+
+</html>

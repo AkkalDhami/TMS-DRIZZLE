@@ -1,0 +1,50 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-primary w-full shadow-sm">
+    <!-- <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="/" class="text-xl font-bold text-indigo-600">Home</a>
+                </div>
+            </div>
+            <div class="flex items-center">
+
+                
+                <a href="/"
+                    class="px-3 py-2 text-sm font-medium text-gray hover:text-indigo-600">Home</a>
+                <% if (user) { %>
+                    <a href="/auth/profile"
+                        class="px-3 py-2 text-sm font-medium text-gray hover:text-indigo-600">Profile</a>
+                    <a href="/auth/logout"
+                    class="px-3 py-2 text-sm font-medium text-gray hover:text-indigo-600">Logout</a>
+                    <% } else {%>
+
+                        <a href="/auth/login"
+                            class="px-3  py-2 text-sm font-medium text-gray hover:text-indigo-600">Login</a>
+                        <a href="/auth/register"
+                            class="ml-4 px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">Register</a>
+
+                <% } %>
+            </div>
+        </div>
+    </nav> -->
+
+    <nav class="mx-auto px-5 max-w-[1500px] py-3 flex justify-between items-center">
+        <div class="flex items-center justify-center gap-3">
+            <h1 onclick="window.location.href='/'"
+                class="text-2xl cursor-pointer sm:text-3xl md:text-4xl font-bold text-purple-500 text-center">
+                NepTask.
+            </h1>
+        </div>
+
+        <div class="flex items-center justify-center gap-2">
+
+            <button onclick="toggleTheme()"
+                class="theme-toggle mx-4  text-dark cursor-pointer transition-transform w-[36px] sm:w-[45px] h-[36px] sm:h-[45px] flex items-center justify-center">
+                <i id="theme-icon" class="ri-moon-line"></i>
+            </button>
+
+            <button id="menu-btn" class="md:hidden text-dark text-2xl">&#9776;</button>
+        </div>
+
+    </nav>
+</header>

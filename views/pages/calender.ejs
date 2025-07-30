@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%- include('../partials/head') %>
+</head>
+
+<body data-theme="light" class="h-full font-monts bg-primary transition-colors duration-200">
+    <%- include('../partials/nav') %>
+        <%- include('../partials/sidebar') %>
+            <%- include('../partials/loader') %>
+
+                <!-- main section -->
+                <main id="main-content" class="pt-24 mb-19
+             text-dark px-4 transition-all duration-300 md:ml-[270px]">
+                    <div class="rounded-2xl max-w-[1300px] w-full whitespace-nowrap overflow-x-auto">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                                    <i class="ri-calendar-line text-2xl text-orange-500"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold" id="currentMonth"></h2>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button id="prevMonth"
+                                    class="w-10 h-10 flex cursor-pointer items-center justify-center bg-[var(--primary-bg)] hover:bg-orange-500/10 rounded-full transition-all duration-300 border border-orange-500/20">
+                                    <i class="ri-arrow-left-s-line text-orange-500"></i>
+                                </button>
+                                <button id="nextMonth"
+                                    class="w-10 h-10 flex cursor-pointer items-center justify-center bg-[var(--primary-bg)] hover:bg-orange-500/10 rounded-full transition-all duration-300 border border-orange-500/20">
+                                    <i class="ri-arrow-right-s-line text-orange-500"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- calander grid -->
+                        <div class="max-w-[1440px] w-full overflow-x-auto">
+                            <div class="min-w-[900px] sm:min-w-full whitespace-nowrap">
+                                <div class="grid grid-cols-7 gap-2 h-[calc(100%-60px)]">
+                                    <!-- Days Header -->
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Sun
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Mon
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Tue
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Wed
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Thu
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Fri
+                                    </div>
+                                    <div class="text-center font-bold py-1.5 text-gray border-b border-orange-500/20">
+                                        Sat
+                                    </div>
+
+                                    <!-- Dates will be inserted here -->
+                                    <div id="calendarDates" class="col-span-7 px-5 grid grid-cols-7 gap-0 pb-4 pt-2">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+
+                <!-- Task Modal -->
+                <div id="taskModal"
+                    class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm bg-opacity-50 items-center justify-center">
+                    <div class="m-3">
+                        <div
+                            class="bg-primary text-dark relative px-2 sm:px-5 py-3 rounded-lg max-h-[780px] overflow-y-auto">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-[18px] sm:text-xl font-bold py-2" id="modalDate"></h3>
+                                <i
+                                    class="closeTaskModal text-lg ri-close-line font-semibold cursor-pointer text-dark hover:bg-zinc-500/10 transition-colors px-2 py-1 rounded"></i>
+                            </div>
+                            <div id="taskCount"
+                                class="text-[12px] mb-4 sm:text-sm font-medium flex items-center justify-between text-gray">
+                            </div>
+                            <div id="tasksList"></div>
+
+                            <!-- total task -->
+                            <div class="flex mt-2 space-y-1 mb-2 text-[14px] sm:text-[18px] flex-col">
+                                <div class="flex justify-between px-2 font-medium text-yellow-500 items-center">
+                                    <span>Pending Tasks:</span>
+                                    <span id="pendingTasks">0</span>
+                                </div>
+                                <div class="flex justify-between px-2 text-blue-500 font-medium items-center">
+                                    <span>In Progress Tasks:</span>
+                                    <span id="inProgressTasks">0</span>
+                                </div>
+                                <div class="flex justify-between px-2 text-green-500 font-medium items-center">
+                                    <span>Completed Tasks:</span>
+                                    <span id="completedTasks">0</span>
+                                </div>
+                                <div class="flex pb-1.5 justify-between px-2 text-pink-500 font-medium items-center">
+                                    <span>Task Progress:</span>
+                                    <span id="taskProgress">0%</span>
+                                </div>
+
+                                <div
+                                    class="flex border-t-2 border-gray-500/20 pt-1.5 justify-between text-orange-500 px-2 font-medium items-center">
+                                    <span>Total Tasks:</span>
+                                    <span id="totalTasks">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie Chart Modal -->
+                <div id="taskPieChartContainer"
+                    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
+                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Your Today's Task Overview</h2>
+                            <button onclick="closePieChart()"
+                                class="p-2 text-white cursor-pointer rounded-full hover:text-orange-600 transition-colors">
+                                <i class="ri-close-line text-2xl"></i>
+                            </button>
+                        </div>
+                        <div class="relative h-80">
+                            <canvas id="taskPieChart"></canvas>
+                        </div>
+                        <div id="pieChartLegend" class="flex justify-center gap-4 mt-8"></div>
+                    </div>
+                </div>
+
+                <div id="dailyChartContainer"
+                    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center transition-all duration-300 opacity-0 hidden">
+                    <div class="bg-primary text-dark mx-3 duration-200 p-5 rounded-xl backdrop-blur-[20px] mb-8">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold">Daily Task Distribution</h3>
+                            <button onclick="closeDailyChart()"
+                                class="p-2 cursor-pointer rounded-full hover:text-orange-600 transition-colors">
+                                <i class="ri-close-line text-2xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="h-[300px]">
+                            <canvas id="dailyDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bar Chart Modal -->
+                <div id="taskChartContainer"
+                    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
+                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-2xl mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Your Today's Task Statistics</h2>
+                            <button onclick="closeChart()"
+                                class="p-2 text-[#fff] cursor-pointer rounded-full hover:text-orange-600 transition-colors">
+                                <i class="ri-close-line text-2xl"></i>
+                            </button>
+                        </div>
+                        <div class="relative h-80">
+                            <canvas id="taskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Line Chart Modal -->
+                <div id="lineChartContainer"
+                    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
+                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-4xl mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold text-dark">Weekly Progress</h2>
+                            <button onclick="closeLineChart()"
+                                class="p-2 cursor-pointer rounded-full hover:text-orange-600 transition-colors">
+                                <i class="ri-close-line text-2xl cursor-pointer"></i>
+                            </button>
+                        </div>
+                        <div class="relative h-96">
+                            <canvas id="lineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script type="module" src="/javascripts/pages/calender.js"></script>
+                <%- include('../partials/utiljs') %>
+</body>
+
+</html>

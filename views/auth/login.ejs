@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include('../partials/head') %>
+</head>
+
+<body class="bg-primary font-monts min-h-screen items-center justify-center font-medium flex flex-col">
+        <main class="pt-8 sm:pt-24 max-w-xl w-full text-dark px-4">
+            <form action="/auth/login" method="POST" class="space-y-4 border border-zinc-500/30 rounded-md p-4 sm:p-6  w-full">
+                <a href="/" class="text-sm my-3 font-medium text-gray hover:text-orange-600 hover:underline">Back Home</a>
+                <h2 class="text-2xl sm:text-3xl font-bold text-dark">Welcome back! Sign in</h2>
+                <div>
+                    <label for="email" class="block mb-1 text-sm font-medium text-gray">Email</label>
+
+                    <input type="email" id="email" name="email"
+                        class="py-2 px-3 text-dark sm:px-4 block w-full border border-zinc-500/30 rounded-md focus:ring-orange-500 focus:ring-1 outline-0 focus:border-orange-500"
+                        placeholder="you@example.com">
+                </div>
+
+                <div>
+                    <label for="password" class="block mb-1 text-sm font-medium text-gray">Password</label>
+                    <input type="password" id="password" name="password"
+                        class="py-2 px-3 text-dark sm:px-4 block w-full border border-zinc-500/30 rounded-md focus:ring-orange-500 focus:ring-1 outline-0 focus:border-orange-500"
+                        placeholder="••••••••">
+
+                </div>
+
+                <div class="flex items-center justify-end">
+                    <div class="text-sm">
+                        <a href="/auth/reset-password" class="font-medium text-orange-600 hover:text-orange-500">Forgot
+                            password?</a>
+                    </div>
+                </div>
+
+                <div class="error text-sm">
+                    <%- include('../partials/error') %>
+                </div>
+
+                <button type="submit"
+                    class="w-full flex cursor-pointer justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                    Sign in
+                </button>
+
+                <!-- or continue with -->
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-zinc-500/30"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-primary text-gray">Or continue with</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <a href="/auth/google"
+                        class="social-btn flex items-center justify-center w-full rounded-md border border-zinc-500/30 bg-card py-2 px-4 text-sm font-medium text-dark text-shadow-sm">
+                        <img src="/images/google.svg" alt="Google" class="w-6 h-6 mr-2">
+                        Google
+                    </a>
+
+                    <a href="/auth/github"
+                        class="social-btn flex items-center justify-center w-full rounded-md border border-zinc-500/30 bg-card py-2 px-4 text-sm font-medium text-dark shadow-sm hover:bg-github-hover">
+                        <img src="/images/github.svg" alt="github" class="w-6 h-6 mr-2">
+                        GitHub
+                    </a>
+                </div>
+
+                <div class="text-center text-sm text-zinc-600">
+                    <p>Don't have an account?
+                        <a href="/auth/register" class="font-medium text-orange-600 hover:text-orange-500">Sign up</a>
+                    </p>
+                </div>
+
+
+            </form>
+        </main>
+
+</body>
+
+</html>

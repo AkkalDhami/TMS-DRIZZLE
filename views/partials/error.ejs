@@ -1,0 +1,5 @@
+<% if (errors?.length > 0) { %>
+    <% errors.forEach((error) => { %>
+        <p class="px-3 text-sm py-2 text-red-600 bg-red-500/10 border-l-4 border-red-400 dark:border-red-700 "><%= error %></p>
+    <% }) %>
+<% } %>

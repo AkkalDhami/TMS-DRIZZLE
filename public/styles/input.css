@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+.font-monts {
+  font-family: "Montserrat", sans-serif;
+}
+@layer components {
+  .bg-primary {
+    @apply bg-white dark:bg-zinc-900;
+  }
+  .bg-light {
+    @apply bg-zinc-50 dark:bg-zinc-800;
+  }
+
+  .text-gray {
+    @apply text-zinc-700 dark:text-zinc-300;
+  }
+  .text-dark {
+    @apply text-zinc-900 dark:text-zinc-50;
+  }
+  .bg-card {
+    @apply bg-zinc-50 dark:bg-zinc-800;
+  }
+  .hover-card {
+    @apply hover:bg-zinc-100 dark:hover:bg-zinc-700 duration-300;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-500  to-orange-600;
+  }
+  .active {
+    @apply bg-orange-500 text-white;
+  }
+}
+.loader {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #333;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+:target {
+  scroll-margin-top: -50px;
+}
+button{
+  cursor: pointer;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
