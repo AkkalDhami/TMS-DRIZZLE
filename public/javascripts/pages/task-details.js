@@ -8,7 +8,7 @@ fetch(`/task/api/task-details/${taskId}`)
     .then((data) => {
         if (data.success) {
             console.log(data);
-            renderTask(data.task.tasks);
+            renderTask(data.task);
         }
     })
     .catch((err) => console.error(err));
@@ -35,34 +35,30 @@ function returnTimeToCompleteTask(startDate, completedAt) {
 
 function renderTask(task) {
     taskCardContainer.innerHTML = "";
-    let { id, title, category, dueDate, createdAt, startDate, updatedAt, lastNotified, notes, priority, status, repeat, subtasks, hasSubtasks, description, completedAt } = task;
-
-    console.log(formattedDate(updatedAt));
+    let { id, title, category, dueDate, createdAt, startDate, updatedAt, notes, priority, status, repeat, subtasks, description, completedAt } = task;
 
     // document.querySelector("#taskDueDate").innerHTML = `${fromatDueDate}`;
 
     // let ctx = document.getElementById("dailyDistributionChart").getContext("2d");
 
-
+    const hasSubtasks = task.subtasks.length > 0;
     // generateDailyChartByType(ctx, new Date(dueDate), 'bar');
-    const completedSubtask = hasSubtasks
-        ? task.subtasks.filter((st) => st.completed).length
-        : 0;
-    const subtasksTotal = hasSubtasks ? task.subtasks.length : 0;
+    const completedSubtask = task.subtasks.filter((st) => st.isCompleted).length
+    const subtasksTotal = task.subtasks.length
     taskCardContainer.innerHTML += `
          <div id="${id}"
                 class="p-5 rounded-lg bg-primary  shadow-md hover:shadow-lg transition-shadow border-2 border-gray-500/20 hover:border-orange-500 duration-300">
 
                 <div class="flex items-start gap-[4px] sm:gap-2">
                     <div class="mt-1 w-5 h-5 flex-shrink-0 flex items-center justify-center">
-                        <i class="${status === 'completed' ? 'ri-checkbox-circle-fill text-green-500' : 'ri-circle-line text-[var(--text-gray)]'}  mr-2  text-base sm:text-[18px]"></i>
+                        <i class="${status === 'completed' ? 'ri-checkbox-circle-fill text-green-500' : 'ri-circle-line text-gray'}  mr-2  text-base sm:text-[18px]"></i>
                     </div>
                     <div class="w-full">
                         <div class="mb-[2px]">
                             <h3 class="text-lg font-semibold ${status === 'completed' ? 'line-through opacity-70' : ''}">${title}</h3>
-                            <p class="text-[var(--text-gray)] text-xs sm:text-base">${description || 'No description'}</p>
+                            <p class="text-gray text-xs sm:text-base">${description || 'No description'}</p>
                         </div>
-                        <div class="flex items-center text-[var(--text-gray)] justify-end mt-2 font-normal text-xs sm:text-[14px] gap-2">
+                        <div class="flex items-center text-gray justify-end mt-2 font-normal text-xs sm:text-[14px] gap-2">
                       ${task.status !== 'completed' ? getDueStatus(task.dueDate) : ''} 
                         </div>
                   
@@ -70,7 +66,7 @@ function renderTask(task) {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 space-x-1.5 gap-[18px_12px]">
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-purple-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-purple-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] text-purple-500 mb-2 font-semibold">
                                             <i class="ri-calendar-line"></i>&nbsp; CREATED AT
@@ -80,7 +76,7 @@ function renderTask(task) {
                                 </div>
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-fuchsia-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-fuchsia-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] text-fuchsia-500 mb-2 font-semibold">
                                             <i class="ri-calendar-2-line"></i>&nbsp; STARTED AT
@@ -90,7 +86,7 @@ function renderTask(task) {
                                 </div>
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-green-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-green-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] mb-2 text-green-500 font-semibold">
                                             <i class="ri-timer-line"></i>&nbsp; DUE DATE
@@ -100,7 +96,7 @@ function renderTask(task) {
                                 </div>
 
                                 
-                                <div class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-indigo-500">
+                                <div class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-indigo-500">
                                 <div>
                                     <p class="text-xs sm:text-base text-indigo-500 mb-2  font-semibold"> <i
                                                 class="ri-calendar-line"></i>&nbsp; LAST COMPLETED</p>
@@ -112,7 +108,7 @@ function renderTask(task) {
 
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-orange-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-orange-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] mb-2 text-orange-500 font-semibold">
                                             <i class="ri-repeat-line"></i>&nbsp; REPEATED
@@ -122,7 +118,7 @@ function renderTask(task) {
                                 </div>
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-blue-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-blue-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] mb-2 text-blue-500 font-semibold">
                                             <i class="ri-flashlight-line"></i>&nbsp; PRIORITY
@@ -133,7 +129,7 @@ function renderTask(task) {
 
                                 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-cyan-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-cyan-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] text-cyan-500 mb-2 font-semibold">
                                             <i class="ri-node-tree"></i>&nbsp; CATEGORY
@@ -143,7 +139,7 @@ function renderTask(task) {
                                 </div>
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-pink-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-pink-500">
                                     <div>
                                         <p class="text-sm sm:text-[18px] mb-2 text-pink-500 font-semibold">
                                            <i class="ri-fire-line"></i>&nbsp; STATUS
@@ -153,7 +149,7 @@ function renderTask(task) {
                                 </div>
 
                                 <div
-                                    class="p-3 bg-[var(--secondary-bg)] rounded-xl border duration-300 border-gray-500/30 hover:border-red-500">
+                                    class="p-3 bg-card rounded-xl border duration-300 border-gray-500/30 hover:border-red-500">
                                     <div>
                                         <p class="text-sm uppercase sm:text-[18px] text-red-500 mb-2 font-semibold">
                                           <i class="ri-hourglass-2-line"></i>&nbsp; Total Duration
@@ -165,30 +161,30 @@ function renderTask(task) {
                         </section>
 
                         <section id="notesSection" class="mt-6 border-t border-zinc-500/30 pt-4">
-                            <h3 class="font-medium text-purple-500 text-[14px] sm:text-xl mb-3">
+                            <h3 class="font-medium text-orange-500 text-[14px] sm:text-xl mb-3">
                                 Notes &amp; Documentation
                             </h3>
                         ${notes?.length > 0
             ? `<div id="notesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-5 gap-6 mb-2">
                 ${notes.map((note) => {
                 let { id, title, content, updatedAt, createdAt } = note;
-                return `  <div class="note-card bg-[var(--secondary-bg)] hover:bg-[var(--stat-bg)] duration-300 rounded-xl  transition-all border-t-4 border-teal-500 overflow-hidden"
+                return `  <div class="note-card bg-card  duration-300 rounded-xl  transition-all border-t-4 border-teal-500 overflow-hidden"
                                     data-note-id="note0">
                                     <div class="px-6 py-3">
                                         <div class="flex items-start justify-between mb-4">
                                             <h3 class="text-lg font-semibold">${title}</h3>
                                         </div>
 
-                                        <p class="text-[var(--text-gray)] break-words line-clamp-3 whitespace-pre-line">${content} </p>
+                                        <p class="text-gray break-words line-clamp-3 whitespace-pre-line">${content} </p>
                                     </div>
                                     <div class="note-actions px-6 pb-3">
                                         <div class="flex justify-between text-sm space-x-3">
-                                            <div class="text-[var(--text-gray)]">
+                                            <div class="text-gray">
                                                 <span>${formattedDate(createdAt)}</span>
                                             </div>
                                             <div class="flex items-center gap-1">
                                                 <button onclick="openNoteDetailsModal(${task.id}, ${id})"
-                                                    class="view-note-btn p-2 text-[var(--text-gray)] hover:text-green-600 hover:bg-green-500/10 rounded-lg transition-colors">
+                                                    class="view-note-btn p-2 text-gray hover:text-green-600 hover:bg-green-500/10 rounded-lg transition-colors">
                                                     <i class="fa-solid fa-expand"></i>
                                                 </button>
                                             </div>
@@ -198,17 +194,17 @@ function renderTask(task) {
             }).join(" ")}
                               
             </div>`
-            : `<p class="text-[var(--text-gray)] italic">No notes available for this task.</p>`}    
+            : `<p class="text-gray italic">No notes available for this task.</p>`}    
                         </section>
                    
                         <section id="subtaskSection" class="mt-6 border-t border-zinc-500/30 pt-4">
-                            <h3 class="font-medium text-purple-500 text-[14px] sm:text-xl mb-3">
+                            <h3 class="font-medium text-orange-500 text-[14px] sm:text-xl mb-3">
                                 Subtasks
                             </h3>
                         ${hasSubtasks
             ? `   <div class="my-2.5">
                                 <div
-                                    class="flex  font-medium items-center justify-between text-xs sm:text-sm text-[var(--text-gray)] mb-1.5">
+                                    class="flex font-medium items-center justify-between text-xs sm:text-sm text-gray mb-1.5">
                                     <div class="flex my-1 items-center gap-3">
                                         <span>${completedSubtask} of ${subtasksTotal} completed</span>
                                     </div>
@@ -224,18 +220,18 @@ function renderTask(task) {
 
                             <div id="subtasksDetailList" class="max-h-[300px] overflow-y-auto rounded-lg py-5 px-1">
                             ${subtasks.map((subtask, i) => {
-                let { id, text, completed } = subtask;
+                let { id, text, isCompleted } = subtask;
 
                 return ` <div id="${id}"
-                                    class="pl-2 mb-2 duration-300 flex gap-2 bg-[var(--secondary-bg)] hover:bg-[var(--stat-bg)] py-4 rounded-md px-3">
+                                    class="pl-2 mb-2 duration-300 flex gap-2 bg-card  py-4 rounded-md px-3">
                                     <i
-                                        class="${completed ? 'ri-checkbox-circle-fill text-green-500' : 'ri-circle-line text-[var(--text-gray)]'}  mr-2  text-base sm:text-[18px]"></i>
-                                    <span class="${completed ? 'line-through opacity-70' : ''}">${i + 1}. &nbsp;${text}</span>
+                                        class="${isCompleted ? 'ri-checkbox-circle-fill text-green-500' : 'ri-circle-line text-gray'}  mr-2  text-base sm:text-[18px]"></i>
+                                    <span class="${isCompleted ? 'line-through opacity-70' : ''}">${i + 1}. &nbsp;${text}</span>
                                 </div>`
             }).join(" ")}
                               
                             </div>`
-            : `<p class="text-[var(--text-gray)] italic">No subtask available for this task.</p>`}
+            : `<p class="text-gray italic">No subtask available for this task.</p>`}
                         </section>
                         <div class="flex justify-between flex-wrap gap-2 mt-4">
                             <div

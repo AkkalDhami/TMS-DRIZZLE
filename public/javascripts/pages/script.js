@@ -1,10 +1,24 @@
 import { showToast } from "../utils/toast.js";
-import { formattedDate, statusBadage } from '../utils/badage.js';
+import {
+    formatDateForInput,
+    formattedDate,
+    getPriorityColor,
+    statusBadage,
+} from "../utils/badage.js";
 import { toggleTaskStatus } from "../utils/toggle-task.js";
 import { deleteTask } from "../utils/delete-task.js";
+import { togglesubtaskStatus } from "../utils/toggle-subtask.js";
+
+let page = 1;
+let currentPage = 1;
+const limit = 10;
+const paginationDiv = document.getElementById('pagination');
+
+
 const toDoForm = document.getElementById("toDoForm");
-const addTaskBtn = document.getElementById("addTaskBtn");
-let spin = document.querySelector('.spin');
+let modalTitle = toDoForm.querySelector("#modalTitle");
+let addTaskBtn = toDoForm.querySelector("#addTaskBtn");
+let spin = document.querySelector(".spin");
 
 toDoForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -12,24 +26,30 @@ toDoForm.addEventListener("submit", async (e) => {
     const formData = new FormData(toDoForm);
     const payload = Object.fromEntries(formData);
 
-    // Convert date inputs to ISO string (if not empty)
-    if (payload.startDate) payload.startDate = new Date(payload.startDate).toISOString();
-    if (payload.dueDate) payload.dueDate = new Date(payload.dueDate).toISOString();
+    //? Convert date inputs to ISO string (if not empty)
+    if (payload.startDate)
+        payload.startDate = new Date(payload.startDate).toISOString();
+    if (payload.dueDate)
+        payload.dueDate = new Date(payload.dueDate).toISOString();
 
     addTaskBtn.disabled = true;
     addTaskBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i>&nbsp;Adding Task...`;
+    const isUpdate = toDoForm.action.includes("/task/update/");
+
+    const actionUrl = toDoForm.action || "/task/add";
+    const method = isUpdate ? "PATCH" : "POST";
 
     try {
-        const res = await fetch("/task/add", {
-            method: "POST",
+        const res = await fetch(`${actionUrl}`, {
+            method,
             headers: {
                 "Content-Type": "application/json",
-                Accept: "application/json",
+                "Accept": "application/json",
             },
             body: JSON.stringify(payload),
         });
 
-        const data = await res.json().catch(() => ({}))
+        const data = await res.json().catch(() => ({}));
 
         if (!res.ok) {
             const message = data?.message || "Error adding task";
@@ -45,150 +65,212 @@ toDoForm.addEventListener("submit", async (e) => {
             return;
         }
 
-        // Success
-        showToast(data.message || "Task added successfully", "success");
+        showToast(
+            data.message || (method === "PATCH" ? "Task updated" : "Task added"),
+            "success"
+        );
         toDoForm.reset();
+        toDoForm.action = ""; //? Reset form action
+        toDoForm.method = "POST"; //? Reset method
         loadTasks();
-
+        closeTaskModal();
     } catch (error) {
         console.error("Network or unexpected error:", error);
         showToast("Network error. Please try again.", "error");
     } finally {
         addTaskBtn.disabled = false;
-        addTaskBtn.innerHTML = `<i class="fa-solid fa-plus"></i>&nbsp;Add New Task`;
+        addTaskBtn.innerHTML = `Save Task`;
     }
 });
 
+fetch("/task/api/all")
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.error(err));
 
-fetch('/task/api/all')
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error(err));
-
-const filterButtons = document.querySelectorAll('.filter-btn');
-const sortSelect = document.getElementById('sortSelect');
-const clearBtn = document.getElementById('clearFiltersBtn');
+const filterButtons = document.querySelectorAll(".filter-btn");
+const sortSelect = document.getElementById("sortSelect");
+const clearBtn = document.getElementById("clearFiltersBtn");
 
 let currentStatus = "";
 let currentSort = "";
-let currentView = 'listView';
+let currentView = "tableView";
 
-// Load tasks initially
 loadTasks();
 
-// open task modal
-const openTaskModal = () => {
-    const taskModal = document.getElementById('taskModal');
-    taskModal.classList.remove('hidden');
-    taskModal.classList.add('flex');
+
+function getBorderColor(status) {
+    switch (status) {
+        case "pending":
+            return "border-amber-500";
+        case "completed":
+            return "border-green-500";
+        case "in progress":
+            return "border-blue-500";
+        default:
+            return "border-gray-500";
+    }
 }
 
-// close task modal
-const closeTaskModal = () => {
-    const taskModal = document.getElementById('taskModal');
-    taskModal.classList.remove('flex');
-    taskModal.classList.add('hidden');
+//? open task modal
+function openTaskModal() {
+    const taskModal = document.getElementById("taskModal");
+    taskModal.classList.remove("hidden");
+    taskModal.classList.add("flex");
+    toDoForm.action = `/task/add`;
+    toDoForm.method = "POST";
 }
 
-document.querySelectorAll('.addTaskBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
+//? close task modal
+function closeTaskModal() {
+    const taskModal = document.getElementById("taskModal");
+    taskModal.classList.remove("flex");
+    taskModal.classList.add("hidden");
+}
+
+//? open subtask modal
+function openSubTaskModal() {
+    const taskModal = document.getElementById("subtaskModal");
+    taskModal.classList.remove("hidden");
+    taskModal.classList.add("flex");
+}
+
+//? close subtask modal
+function closeSubTaskModal() {
+    const taskModal = document.getElementById("subtaskModal");
+    taskModal.classList.remove("flex");
+    taskModal.classList.add("hidden");
+}
+
+//? open subtask modal
+function openUpdateSubTaskModal() {
+    const taskModal = document.getElementById("editSubtaskModal");
+    taskModal.classList.remove("hidden");
+    taskModal.classList.add("flex");
+}
+
+//? close subtask modal
+function closeUpdateSubTaskModal() {
+    const taskModal = document.getElementById("editSubtaskModal");
+    taskModal.classList.remove("flex");
+    taskModal.classList.add("hidden");
+    document.getElementById('editSubtaskInput').value = '';
+}
+
+document.querySelectorAll(".addTaskBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
         openTaskModal();
     });
 });
 
-document.querySelectorAll('.closeTaskModal').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.querySelectorAll(".closeUpdateSubtaskModal").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        closeUpdateSubTaskModal();
+    });
+});
+
+document.querySelectorAll(".closeSubtaskModalBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        closeSubTaskModal();
+    });
+});
+
+document.querySelectorAll(".closeTaskModal").forEach((btn) => {
+    btn.addEventListener("click", () => {
         closeTaskModal();
     });
 });
 
-document.querySelectorAll('#taskDisplayBtns button').forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Update current view
+document.querySelectorAll("#taskDisplayBtns button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+        //? Update current view
         currentView = btn.dataset.view;
 
-        // Toggle active class
-        document.querySelectorAll('#taskDisplayBtns button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+        //? Toggle active class
+        document
+            .querySelectorAll("#taskDisplayBtns button")
+            .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
 
-        // Reload tasks in new format
+        //? Reload tasks in new format
         loadTasks();
     });
 });
 
-// delete task modal
-function openDeleteTaskModal() {
-    const deleteModal = document.getElementById('deleteTaskModal');
-    deleteModal.classList.remove('hidden');
-    deleteModal.classList.add('flex');
-}
-
-function closeDeleteTaskModal() {
-    const deleteModal = document.getElementById('deleteTaskModal');
-    deleteModal.classList.remove('flex');
-    deleteModal.classList.add('hidden');
-}
-
-document.querySelectorAll('.closeDeleteTaskModalBtn').forEach(btn => {
-    btn.addEventListener('click', () => {
+document.querySelectorAll(".closeDeleteTaskModalBtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
         closeDeleteTaskModal();
     });
 });
 
-// Handle status filter
-filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Remove active class from all, add to current
-        filterButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+//? delete task modal
+function openDeleteTaskModal() {
+    const deleteModal = document.getElementById("deleteTaskModal");
+    deleteModal.classList.remove("hidden");
+    deleteModal.classList.add("flex");
+}
+
+function closeDeleteTaskModal() {
+    const deleteModal = document.getElementById("deleteTaskModal");
+    deleteModal.classList.remove("flex");
+    deleteModal.classList.add("hidden");
+}
+
+//? Handle status filter
+filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+        //? Remove active class from all, add to current
+        filterButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
 
         currentStatus = btn.dataset.filter;
         loadTasks();
     });
 });
 
-// Handle sort select
-sortSelect.addEventListener('change', () => {
+//? Handle sort select
+sortSelect.addEventListener("change", () => {
     const value = sortSelect.value;
-    if (value === 'date-desc') {
-        currentSort = 'createdAt';
-        currentOrder = 'desc';
-    } else if (value === 'date-asc') {
-        currentSort = 'createdAt';
-        currentOrder = 'asc';
-    } else if (value === 'priority') {
-        currentSort = 'priority';
-        currentOrder = 'asc';
-    } else if (value === 'due-date') {
-        currentSort = 'dueDate';
-        currentOrder = 'asc';
+    if (value === "date-desc") {
+        currentSort = "createdAt";
+        currentOrder = "desc";
+    } else if (value === "date-asc") {
+        currentSort = "createdAt";
+        currentOrder = "asc";
+    } else if (value === "priority") {
+        currentSort = "priority";
+        currentOrder = "asc";
+    } else if (value === "due-date") {
+        currentSort = "dueDate";
+        currentOrder = "asc";
     }
     loadTasks();
 });
 
-// Handle reset
-clearBtn.addEventListener('click', () => {
+//? Handle reset
+clearBtn.addEventListener("click", () => {
     currentStatus = "";
     currentSort = "createdAt";
     currentOrder = "desc";
 
-    // Reset UI
-    filterButtons.forEach(b => b.classList.remove('active'));
-    document.querySelector('[data-filter=""]').classList.add('active');
+    //? Reset UI
+    filterButtons.forEach((b) => b.classList.remove("active"));
+    document.querySelector('[data-filter=""]').classList.add("active");
     sortSelect.selectedIndex = 0;
 
     loadTasks();
 });
 
-// Load and display tasks
+//? Load and display tasks
 async function loadTasks(page = 1) {
+    currentPage = page;
     const params = new URLSearchParams();
-    if (currentStatus) params.append('status', currentStatus);
+    if (currentStatus) params.append("status", currentStatus);
     if (currentSort) {
-        params.append('sort', currentSort);
-        params.append('order', currentOrder);
+        params.append("sort", currentSort);
+        params.append("order", currentOrder);
     }
-    params.append('page', page);
+    params.append("page", page);
 
     try {
         const res = await fetch(`/task/api/all?${params.toString()}`);
@@ -196,35 +278,78 @@ async function loadTasks(page = 1) {
 
         if (data.success) {
             renderTasks(data.tasks);
-            // Optionally update pagination here
+            renderPagination(data.totalPages, data.tasks.length);
         } else {
-            console.error('Failed to fetch tasks:', data.error);
+            console.error("Failed to fetch tasks:", data.error);
         }
     } catch (err) {
-        console.error('Fetch error:', err);
+        console.error("Fetch error:", err);
     }
 }
 
-function renderTasks(tasks) {
-    if (tasks.length === 0) {
-        const container = document.getElementById('taskLists');
-        container.innerHTML = '<p class="text-sm text-gray">No tasks found.</p>';
-        return;
-    }
-    document.getElementById('taskCount').innerHTML = `All task${tasks.length > 1 ? 's' : ''}: ${tasks.length}`;
-    if (currentView === 'listView') {
-        const container = document.getElementById('taskLists');
-        container.innerHTML = '';
+//? Render empty tasks
+function renderEmptyTasks(id) {
+    const container = document.getElementById(`${id}`);
+    container.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-10 text-center">
+                <div class="w-16 h-16 mb-4 rounded-full bg-orange-500/10 flex items-center justify-center">
+                    <i class="ri-calendar-todo-line text-3xl text-orange-500"></i>
+                </div>
+                <span class="text-xl font-semibold text-[var(--text-color)] mb-2">No tasks available</span>
+                <p class="text-gray max-w-md">Add a new task using the form above to get started with your productivity journey.</p>
+            </div>
+        `;
+}
 
-        tasks.forEach(task => {
-            const { title, description, subTasks, category, createdAt, dueDate, id, priority, remainder, repeat, status, startDate, updatedAt, userId } = task;
+//? Render tasks
+function renderTasks(tasks) {
+    document.getElementById("taskCount").innerHTML =
+        `All task${tasks.length > 1 ? "s" : ""}: ${tasks.length}`;
+    if (currentView === "listView") {
+        if (tasks.length === 0) {
+            return renderEmptyTasks("taskLists");
+        }
+        const container = document.getElementById("taskLists");
+        container.innerHTML = "";
+
+        tasks.forEach((task) => {
+            const {
+                title,
+                description,
+                subtasks,
+                category,
+                createdAt,
+                dueDate,
+                id,
+                priority,
+                remainder,
+                repeat,
+                status,
+                startDate,
+                updatedAt,
+                userId,
+            } = task;
+
+            let completedSubtasks = subtasks.filter(
+                (subtask) => subtask.isCompleted
+            ).length;
+            let totalSubtasks = subtasks.length;
+
+            let completedPercentage = 0;
+            if (totalSubtasks > 0) {
+                completedPercentage = Math.round(
+                    (completedSubtasks / totalSubtasks) * 100
+                );
+            }
+
             const li = document.createElement("li");
-            li.className = "task-item bg-primary ring ring-zinc-500/30 transform hover:translate-y-[-4px] relative py-3 mb-4 ring-l-2 rounded-xl border-l-5 border-blue-500  backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden";
+            li.className =
+                `task-item bg-primary ring ring-zinc-500/30 transform hover:translate-y-[-4px] relative py-3 mb-4 ring-l-2 rounded-xl border-l-5 ${getBorderColor(status)} backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden`;
             li.innerHTML = ` 
                     <div class="flex h-full items-start p-2 sm:p-4 gap-2 sm:gap-3 relative">
 
                         <div class="flex items-center">
-                            <input type="checkbox" ${task.status === 'completed' ? "checked" : ""}
+                            <input type="checkbox" ${task.status === "completed" ? "checked" : ""}
                                 data-taskid="${id}" class="task-toggle-status sm:h-4.5 w-4 sm:w-4.5 h-4 cursor-pointer accent-blue-500 rounded-full">
                         </div>
 
@@ -238,11 +363,11 @@ function renderTasks(tasks) {
                                         </h3>
 
                                     </div>
-                                    <p class="line-clamp-1 text-sm sm:text-base text-gray my-1">${description}</p>
+                                    <p class="line-clamp-1 text-sm sm:text-base text-zinc my-1">${description}</p>
                                     <div class="flex flex-wrap text-xs sm:text-sm items-center justify-between">
                                         <div class="flex flex-wrap text-xs sm:text-sm items-center gap-4">
                                             <span
-                                                class="flex items-center text-gray gap-1 py-1 rounded-full font-medium whitespace-nowrap">
+                                                class="flex items-center text-zinc gap-1 py-1 rounded-full font-medium whitespace-nowrap">
                                                 Due: ${formattedDate(dueDate)}
                                             </span>
                                             <span class="font-medium capitalize text-red-500">
@@ -258,42 +383,44 @@ function renderTasks(tasks) {
                                     </div>
                                 </div>
                             </div>
+                            
 
-
-                        ${subTasks.length > 0 ? `<div class="my-2.5">
+                        ${subtasks?.length > 0
+                    ? `<div class="my-2.5">
                                 <div
-                                    class="flex font-medium items-center justify-between text-xs sm:text-sm text-[var(--text-gray)] mb-1.5">
+                                    class="flex font-medium items-center justify-between text-xs sm:text-sm text-gray mb-1.5">
                                     <div class="flex my-1 items-center gap-3">
-                                        <span><i class="ri-node-tree"></i> 1/3 subtasks</span>
+                                        <span><i class="ri-node-tree"></i> ${completedSubtasks}/${totalSubtasks} subtasks</span>
                                     </div>
-                                    <span>33% complete</span>
+                                    <span>${Math.round(completedPercentage)}% complete</span>
                                 </div>
-                                <div class="h-1.5 my-1 bg-gray-200/50 rounded-md overflow-hidden">
+                                <div class="h-1.5 my-1 bg-zinc-400/50 overflow-hidden">
                                     <div class="h-full bg-green-500 rounded-full transition-all duration-1000"
-                                        style="width: 33.33333333333333%"></div>
+                                        style="width: ${completedPercentage}%"></div>
                                 </div>
 
-                            </div>` : ''}
+                            </div>`
+                    : ""
+                }
 
 
                             <div class="flex items-center flex-wrap gap-2 justify-between mt-2">
                                 <div class="flex items-center gap-1">
-                                    <button onclick="breakdownTask(1750328196785)"
-                                        class="text-purple-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-purple-500/10 hover:bg-purple-500/15 transition-colors"
-                                        title="Break down task">
-                                        <i class="ri-list-check-2"></i>
+                                    <button data-taskid="${id}"
+                                        class="addSubTask text-purple-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-purple-500/10 hover:bg-purple-500/15 transition-colors">
+                                        <i class="addSubTask ri-list-check-2" data-taskid="${id}"></i>
                                     </button>
-                                    <button onclick="openEditModal(1750328196785)"
-                                        class="text-blue-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-blue-500/10  hover:bg-blue-500/15 transition-colors"
+                                    <button data-taskid="${id}"
+                                        class="editTask text-blue-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-blue-500/10  hover:bg-blue-500/15 transition-colors"
                                         title="Edit task">
-                                        <i class="ri-edit-line"></i>
+                                        <i class="ri-edit-line editTask" data-taskid="${id}"></i>
                                     </button>
                                     <button data-taskid="${id}"
                                         class="deleteTask text-red-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-red-500/10  hover:bg-red-500/15 transition-colors"
                                         title="Delete task">
                                         <i data-taskid="${id}" class="deleteTask ri-delete-bin-line"></i>
                                     </button>
-                                    <button onclick="showTaskDetailsModal(1750328196785)"
+                                    <button onclick="window.location.href='/task/${id}'"
                                         class="text-orange-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-orange-500/10  hover:bg-orange-500/15 transition-colors"
                                         title="View task details">
                                         <i class="ri-external-link-line"></i>
@@ -307,144 +434,469 @@ function renderTasks(tasks) {
                         </div>
                     </div>
 
-                    ${subTasks.length > 0 ? `<div class="subtasks-container max-h-[300px] overflow-y-auto px-1.5 sm:px-4 pb-3 pt-0 ml-8 mr-4">
+                    ${subtasks?.length > 0
+                    ? `<div class="subtasks-container max-h-[200px] overflow-y-auto px-1.5 sm:px-4 pb-3 pt-0 ml-8 mr-4">
                         <div class="subtasks-list space-y-2 mt-1">
-
-                            <div class="subtask-item bg-card duration-300 flex items-center gap-2 p-2 pl-3 justify-between rounded-md border-l-3  border-green-500
-                                                                                    transition-colors">
+                        ${subtasks.map(
+                        (subtask, index) => `
+                            <div class="subtask-item bg-card duration-300 flex items-center gap-2 p-2 pl-3 justify-between rounded-md border-l-3 ${subtask.isCompleted ? "border-green-500" : "border-amber-500"} transition-colors">
                                 <div class="flex items-center gap-2">
-                                    <input type="checkbox" checked="" onchange="toggleSubtaskFromList(1750328196785, 1753700386685)"
-                                        class="h-3 w-3 cursor-pointer accent-purple-500 rounded-full">
-                                    <span class="text-sm line-through text-[var(--text-gray)]">
-                                        1. &nbsp;asfdasdf
+                                    <input type="checkbox" data-subtaskid="${subtask.id}" ${subtask.isCompleted ? "checked" : ""} 
+                                        class="subtask-toggle-status h-3 w-3 cursor-pointer accent-blue-500 rounded-full">
+                                    <span class="text-sm ${subtask.isCompleted ? "line-through" : ""} text-gray">
+                                        ${index + 1}. &nbsp; ${subtask.text}
                                     </span>
                                 </div>
-                                <div class="flex text-[var(--text-gray)] items-center gap-1 sm:gap-3">
-                                    <button onclick="editSubtask(1750328196785, 1753700386685)"
-                                        class="p-1.5 rounded-lg  hover:text-blue-500 transition-colors" title="Edit subtask">
-                                        <i class="ri-edit-line"></i>
+                                <div class="flex text-gray items-center gap-1 sm:gap-3">
+                                    <button data-subtaskid="${subtask.id}"
+                                        class="editSubtask p-1.5 rounded-lg  hover:text-blue-500 transition-colors" title="Edit subtask">
+                                        <i class="editSubtask  ri-edit-line" data-subtaskid="${subtask.id}"></i>
                                     </button>
-                                    <button onclick="removeSubtask(1750328196785, 1753700386685)"
-                                        class="p-1.5 rounded-lg  hover:text-red-500 transition-colors" title="Delete subtask">
-                                        <i class="ri-delete-bin-line"></i>
+                                    <button data-subtaskid="${subtask.id}"
+                                        class="deleteSubtask p-1.5 rounded-lg  hover:text-red-500 transition-colors">
+                                        <i class="ri-delete-bin-line deleteSubtask" data-subtaskid="${subtask.id}"></i>
                                     </button>
                                 </div>
-                            </div>
+                            </div> 
+                            `
+                    )
+                        .join("")}
 
-                            <div class="subtask-item bg-[var(--card-bg)] hover:bg-[var(--stat-bg)] duration-300 flex items-center gap-2 p-2 pl-3 justify-between rounded-md border-l-3  border-purple-500
-                                                                                    transition-colors">
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" onchange="toggleSubtaskFromList(1750328196785, 1753700387304)"
-                                        class="h-3 w-3 cursor-pointer accent-purple-500 rounded-full">
-                                    <span class="text-sm text-[var(--text-color)]">
-                                        2. &nbsp;asdfasdf
-                                    </span>
-                                </div>
-                                <div class="flex text-[var(--text-gray)] items-center gap-1 sm:gap-3">
-                                    <button onclick="editSubtask(1750328196785, 1753700387304)"
-                                        class="p-1.5 rounded-lg  hover:text-blue-500 transition-colors" title="Edit subtask">
-                                        <i class="ri-edit-line"></i>
-                                    </button>
-                                    <button onclick="removeSubtask(1750328196785, 1753700387304)"
-                                        class="p-1.5 rounded-lg  hover:text-red-500 transition-colors" title="Delete subtask">
-                                        <i class="ri-delete-bin-line"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="subtask-item bg-[var(--card-bg)] hover:bg-[var(--stat-bg)] duration-300 flex items-center gap-2 p-2 pl-3 justify-between rounded-md border-l-3  border-purple-500
-                                                                                    transition-colors">
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" onchange="toggleSubtaskFromList(1750328196785, 1753700387731)"
-                                        class="h-3 w-3 cursor-pointer accent-purple-500 rounded-full">
-                                    <span class="text-sm text-[var(--text-color)]">
-                                        3. &nbsp;asdf
-                                    </span>
-                                </div>
-                                <div class="flex text-[var(--text-gray)] items-center gap-1 sm:gap-3">
-                                    <button onclick="editSubtask(1750328196785, 1753700387731)"
-                                        class="p-1.5 rounded-lg  hover:text-blue-500 transition-colors" title="Edit subtask">
-                                        <i class="ri-edit-line"></i>
-                                    </button>
-                                    <button onclick="removeSubtask(1750328196785, 1753700387731)"
-                                        class="p-1.5 rounded-lg  hover:text-red-500 transition-colors" title="Delete subtask">
-                                        <i class="ri-delete-bin-line"></i>
-                                    </button>
-                                </div>
-                            </div>
 
                         </div>
-                    </div>` : ''} 
+                    </div>`
+                    : ""
+                } 
                                     `;
 
             container.appendChild(li);
-        })
+        });
     } else {
-        const container = document.getElementById('tasksTableView');
-        container.innerHTML = '';
+        const container = document.getElementById("tasksTableView");
+        container.innerHTML = "";
 
-        tasks.forEach(task => {
-            const { title, description, category, createdAt, dueDate, id, priority, remainder, repeat, status, startDate, updatedAt, userId } = task;
+        if (tasks.length === 0) {
+            return `<tr>
+                    <td colspan="7">${renderEmptyTasks("tasksTableView")}</td>
+            </tr>`;
+        }
+
+        tasks.forEach((task) => {
+            const {
+                title,
+                description,
+                category,
+                createdAt,
+                dueDate,
+                id,
+                priority,
+                remainder,
+                repeat,
+                status,
+                startDate,
+                updatedAt,
+                userId,
+            } = task;
             const row = document.createElement("tr");
-            row.className = "task-text hover:bg-zinc-100 hover:dark:bg-zinc-800 duration-300";
+            row.className =
+                "task-text hover:bg-zinc-100 hover:dark:bg-zinc-800 duration-300";
             row.innerHTML = `
           <td class="py-4 px-4">
            <div class="flex items-center gap-3">
-                <input ${status === 'completed' ? 'checked' : ''} type="checkbox" name="toggleStatus" class="w-3.5 h-3.5 cursor-pointer accent-orange-500">
-                ${title}
+                <input ${status === "completed" ? "checked" : ""} type="checkbox" data-taskid="${id}" class="task-toggle-status w-3.5 h-3.5 cursor-pointer accent-blue-500">
+                <span class="text-sm font-medium ${status === "completed" ? "line-through text-gray" : "text-dark"}">${title.length > 20 ? title.slice(0, 20) + "..." : title}</span>
            </div>
           </td>
-          <td class="py-4 px-4">${description}</td>
+          <td class="py-4 px-4">${description.length > 20 ? description.slice(0, 20) + "..." : description}</td>
           <td class="py-4 px-4">${formattedDate(dueDate)}</td>
-          <td class="py-4 px-4">${priority}</td>
+          <td class="py-4 px-4">${getPriorityColor(priority)}</td>
           <td class="py-4 px-4">${statusBadage(status)}</td>
           <td class="py-4 px-4 capitalize">${statusBadage(repeat)}</td>
+          <td class="py-4 px-4 capitalize">
+                                 <button data-taskid="${id}"
+                                        class="editTask text-blue-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md hover:bg-blue-500/10 transition-colors"
+                                        title="Edit task">
+                                        <i class="ri-edit-line editTask" data-taskid="${id}"></i>
+                                    </button>
+                                    <button data-taskid="${id}"
+                                        class="deleteTask text-red-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md hover:bg-red-500/10 transition-colors"
+                                        title="Delete task">
+                                        <i data-taskid="${id}" class="deleteTask ri-delete-bin-line"></i>
+                                    </button>
+          </td>
            `;
-            container.appendChild(row)
+            container.appendChild(row);
         });
     }
 }
 
-// task toggle
-document.addEventListener('change', async (e) => {
-    if (e.target.classList.contains('task-toggle-status')) {
-        const taskId = e.target.dataset.taskid;
-        console.log(taskId);
+//? task toggle
+document.addEventListener("change", async (e) => {
 
-        spin.classList.remove('hidden');
-        spin.classList.add('flex');
+    //* event listener for toggle task status
+    if (e.target.classList.contains("task-toggle-status")) {
+        const taskId = e.target.dataset.taskid;
+
+        spin.classList.remove("hidden");
+        spin.classList.add("flex");
         const data = await toggleTaskStatus(taskId);
         if (!data.success) {
-            return showToast(data.message, 'error');
+            spin.classList.remove("flex");
+            spin.classList.add("hidden");
+            return showToast(data.message, "error");
         }
-        spin.classList.remove('flex');
-        spin.classList.add('hidden');
+
+        spin.classList.remove("flex");
+        spin.classList.add("hidden");
         loadTasks();
-        showToast(data.message, 'success');
+        showToast(data.message, "success");
+    }
+
+    //* event listener for toggle subtask status
+    if (e.target.classList.contains("subtask-toggle-status")) {
+        try {
+            const subtaskid = e.target.dataset.subtaskid;
+
+            spin.classList.remove("hidden");
+            spin.classList.add("flex");
+            const data = await togglesubtaskStatus(subtaskid);
+
+            if (!data.success) {
+                return showToast(data.message, "error");
+            }
+            loadTasks();
+            showToast(data.message, "success");
+        } catch (error) {
+            console.error(error);
+            showToast(error.message, "error");
+        } finally {
+            spin.classList.remove("flex");
+            spin.classList.add("hidden");
+        }
+    }
+
+});
+
+//? event listener for toggle status
+document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("deleteTask")) {
+        const taskId = e.target.dataset.taskid;
+        openDeleteTaskModal();
+        document
+            .getElementById("deleteTaskConfirmBtn")
+            .addEventListener("click", async () => {
+                spin.classList.remove("hidden");
+                spin.classList.add("flex");
+                const data = await deleteTask(taskId);
+                if (!data.success) {
+                    spin.classList.remove("flex");
+                    spin.classList.add("hidden");
+                    closeDeleteTaskModal();
+                    return showToast(data.message, "error");
+                }
+                spin.classList.remove("flex");
+                spin.classList.add("hidden");
+                closeDeleteTaskModal();
+                showToast(data.message, "success");
+                loadTasks();
+            });
     }
 });
 
-
-// event listener for toggle status
-document.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('deleteTask')) {
+//? edit task
+document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("editTask")) {
         const taskId = e.target.dataset.taskid;
-        openDeleteTaskModal();
-        document.getElementById("deleteTaskConfirmBtn").addEventListener('click', async () => {
-            spin.classList.remove('hidden');
-            spin.classList.add('flex');
-            const data = await deleteTask(taskId);
-            if (!data.success) {
-                spin.classList.remove('flex');
-                spin.classList.add('hidden');
-                closeDeleteTaskModal();
-                return showToast(data.message, 'error');
-            }
-            spin.classList.remove('flex');
-            spin.classList.add('hidden');
-            closeDeleteTaskModal();
-            showToast(data.message, 'success');
-            loadTasks();
-        })
+        openTaskModal();
+        updateFormElements(taskId);
+        console.log(taskId);
     }
-})
+});
+
+//? update form
+function updateFormElements(taskId) {
+    modalTitle.innerHTML = "Update Task";
+    fetch(`/task/api/task-details/${taskId}`)
+        .then((res) => res.json())
+        .then(({ success, task }) => {
+            if (!success) {
+                return showToast(data.message, "error");
+            }
+
+            toDoForm.elements["title"].value = task.title;
+            toDoForm.elements["description"].value = task.description;
+            toDoForm.elements["category"].value = task.category;
+            toDoForm.elements["priority"].value = task.priority;
+            toDoForm.elements["repeat"].value = task.repeat;
+            toDoForm.elements["startDate"].value = formatDateForInput(
+                task.startDate
+            );
+            toDoForm.elements["dueDate"].value = formatDateForInput(task.dueDate);
+            toDoForm.elements["remainder"].value = task.remainder;
+
+            toDoForm.action = `/task/update/${taskId}`;
+            toDoForm.method = "PATCH";
+        })
+        .catch((err) => console.error(err));
+}
+
+//? subtask handlers
+document.addEventListener("click", async (e) => {
+
+    //? open subtask modal
+    if (e.target.classList.contains("addSubTask")) {
+        const taskId = e.target.dataset.taskid;
+
+        try {
+            const res = await fetch(`/task/api/task-details/${taskId}`);
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                return showToast(data.message || "Failed to load task", "error");
+            }
+
+            document.getElementById("parentTaskText").innerHTML =
+                data.task?.title || "Unknown Task";
+            document.getElementById("subtaskForm").dataset.taskid = taskId;
+            openSubTaskModal();
+        } catch (error) {
+            console.error(error);
+            showToast("Something went wrong while loading task", "error");
+        }
+    }
+
+    //? add subtask when clicking actual submit button
+    if (e.target.id === "submitSubtaskBtn") {
+        e.preventDefault();
+        const taskId = document.getElementById("subtaskForm").dataset.taskid;
+        if (!taskId) return showToast("Parent task ID not found", "error");
+
+        const data = await addSubTask(taskId);
+
+        if (!data.success) return showToast(data.message, "error");
+        showToast(data.message || "Subtask added", "success");
+
+        document.getElementById("subtaskForm").reset();
+        closeSubTaskModal();
+        loadTasks();
+    }
+
+    //? delete subtask
+    if (e.target.classList.contains("deleteSubtask")) {
+        const subtaskId = e.target.dataset.subtaskid;
+
+        if (!subtaskId) return showToast("Subtask ID not found", "error");
+
+        spin.classList.remove("hidden");
+        spin.classList.add("flex");
+
+        try {
+            let res = await fetch(`/task/subtask/delete/${subtaskId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            });
+
+            let data = await res.json();
+            if (!res.ok) {
+                return showToast(data.message || "Failed to delete subtask", "error");
+            }
+
+            showToast(data.message || "Subtask deleted", "success");
+        } catch (error) {
+            console.error("Error deleting subtask:", error);
+            showToast("Network error occurred", "error");
+        } finally {
+            spin.classList.add("hidden");
+            spin.classList.remove("flex");
+            loadTasks();
+        }
+    }
+
+    //? edit subtask
+    if (e.target.classList.contains("editSubtask")) {
+        const subtaskId = e.target.dataset.subtaskid;
+        openUpdateSubTaskModal();
+        await updateSubtaskFormElements(subtaskId);
+    }
+});
+
+//? add subtask
+async function addSubTask(taskId) {
+    const subTaskForm = document.getElementById("subtaskForm");
+    const formData = new FormData(subTaskForm);
+    const payload = Object.fromEntries(formData);
+
+    try {
+        spin.classList.remove("hidden");
+        spin.classList.add("flex");
+
+        const res = await fetch(`/task/subtask/add/${taskId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            return {
+                success: false,
+                message: data.message || "Failed to add subtask",
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error adding subtask:", error);
+        return { success: false, message: "Network error occurred" };
+    } finally {
+        spin.classList.add("hidden");
+        spin.classList.remove("flex");
+    }
+}
+
+//? update subtask form elements
+async function updateSubtaskFormElements(subtaskId) {
+
+    try {
+        const res = await fetch(`/task/subtask/api/details/${subtaskId}`);
+        const subtaskData = await res.json();
+
+        if (!res.ok || !subtaskData.success) {
+            return showToast(subtaskData.message || "Failed to load subtask", "error");
+        }
+
+        document.getElementById('editSubtaskInput').value = subtaskData.subtask.text;
+        document.getElementById('editSubtaskInput').focus();
+        document
+            .getElementById("updateSubtaskForm")
+            .addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const data = await updateSubTask(subtaskId);
+                if (!data.success) return showToast(data.message, "error");
+                showToast(data.message || "Subtask updated successfully", "success");
+                document.getElementById("updateSubtaskForm").reset();
+                closeUpdateSubTaskModal();
+                loadTasks();
+            }, { once: true });
+    } catch (error) {
+        console.error(error);
+        showToast("Something went wrong while loading subtask", "error");
+    }
+
+}
+
+//? update subtask
+async function updateSubTask(subtaskId) {
+    const subTaskForm = document.getElementById("updateSubtaskForm");
+    const formData = new FormData(subTaskForm);
+    const payload = Object.fromEntries(formData);
+
+    try {
+        spin.classList.remove("hidden");
+        spin.classList.add("flex");
+
+        const res = await fetch(`/task/subtask/update/${subtaskId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            return {
+                success: false,
+                message: data.message || "Failed to update subtask",
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error("Error updating subtask:", error);
+        return { success: false, message: "Network error occurred" };
+    } finally {
+        spin.classList.add("hidden");
+        spin.classList.remove("flex");
+        subTaskForm.reset();
+    }
+}
+
+//? pagination
+
+function renderPagination(totalPages, totalUsers) {
+    paginationDiv.innerHTML = '';
+    if (totalPages <= 1) return;
+
+    const createBtn = (label, disabled = false, isActive = false, onClick = null) => {
+        const btn = document.createElement('button');
+        btn.innerHTML = label;
+        btn.className = `mx-1 px-3 py-1 rounded text-sm ${isActive ? 'bg-green-500 text-white'
+            : disabled ? 'bg-zinc-500/10 text-dark cursor-not-allowed'
+                : 'bg-zinc-500/20 hover:bg-zinc-500/30'
+            }`;
+        if (!disabled && onClick) btn.addEventListener('click', onClick);
+        return btn;
+    };
+
+    // ← Previous
+    paginationDiv.appendChild(
+        createBtn(`<i class="ri-arrow-left-double-line"></i>`, page === 1, false, () => {
+            if (page > 1) {
+                page--;
+                loadTasks(page);
+            }
+        })
+    );
+
+    // First
+    if (page > 2) {
+        paginationDiv.appendChild(createBtn('1', false, page === 1, () => loadTasks(1)));
+        if (page > 3) {
+            paginationDiv.appendChild(document.createTextNode('...'));
+        }
+    }
+
+    // Previous Page
+    if (page > 1) {
+        paginationDiv.appendChild(createBtn(`${page - 1}`, false, false, () => loadTasks(page - 1)));
+    }
+
+    // Current
+    paginationDiv.appendChild(createBtn(`${page}`, false, true));
+
+    // Next Page
+    if (page < totalPages) {
+        paginationDiv.appendChild(createBtn(`${page + 1}`, false, false, () => loadTasks(page + 1)));
+    }
+
+    // Last Page
+    if (page < totalPages - 1) {
+        if (page < totalPages - 2) {
+            paginationDiv.appendChild(document.createTextNode('...'));
+        }
+        paginationDiv.appendChild(createBtn(`${totalPages}`, false, page === totalPages, () => loadTasks(totalPages)));
+    }
+
+    // → Next
+    paginationDiv.appendChild(
+        createBtn(`<i class="ri-arrow-right-double-line"></i>`, page === totalPages, false, () => {
+            if (page < totalPages) {
+                loadTasks(page + 1);
+            }
+        })
+    );
+
+    const start = (page - 1) * limit + 1;
+    const end = Math.min(page * limit, totalUsers);
+    const rangeText = `Showing ${start}–${end} of ${totalUsers} results`;
+
+    document.getElementById('product-count').textContent = rangeText;
+}
