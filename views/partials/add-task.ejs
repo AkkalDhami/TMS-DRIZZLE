@@ -1,15 +1,16 @@
-<div id="taskModal"
+<section id="taskModal"
     class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all z-50">
-    <div class="bg-primary max-h-[600px] overflow-y-auto no-scrollbar p-3 sm:p-6 rounded-lg shadow-2xl w-full max-w-4xl">
+    <div
+        class="bg-primary max-h-[600px] overflow-y-auto no-scrollbar p-3 sm:p-6 rounded-lg shadow-2xl w-full max-w-5xl">
         <form id="toDoForm">
             <div>
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold mb-4">Add New Task</h2>
+                    <h2 id="modalTitle" class="text-xl font-bold mb-4">Add New Task</h2>
                     <button type="button"
                         class="closeTaskModal text-2xl hover:bg-zinc-500/10 transition-colors px-2 py-1 rounded-md"><i
                             class="ri-close-fill"></i></button>
                 </div>
-                <p class="my-4 text-gray font-normal text-base">
+                <p class="mb-3 text-gray font-normal text-base">
                     Fields marked with <span class="text-red-500">*</span> are required
                 </p>
 
@@ -123,12 +124,11 @@
 
                     <div class="justify-end mt-4 flex gap-2">
                         <button type="submit" id="addTaskBtn"
-                            class="p-3 bg-orange-500 cursor-pointer text-white rounded-lg hover:bg-orange-600 transition-colors">
-                            <i class="fa-solid fa-plus"></i> &nbsp;
-                            Add New Task
+                            class="px-3 py-2 bg-orange-500 cursor-pointer text-white rounded-lg hover:bg-orange-600 transition-colors">
+                            Save Task
                         </button>
                         <button type="button"
-                            class="closeTaskModal p-3 bg-zinc-500 cursor-pointer text-white rounded-lg hover:bg-zinc-600 transition-colors">
+                            class="closeTaskModal px-3 py-2 bg-zinc-500 cursor-pointer text-white rounded-lg hover:bg-zinc-600 transition-colors">
                             Cancel
                         </button>
                     </div>
@@ -136,4 +136,4 @@
             </div>
         </form>
     </div>
-</div>
+</section>
