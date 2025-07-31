@@ -13,22 +13,23 @@ export function statusBadage(status) {
         pending: 'bg-amber-500/10 text-amber-600',
         'in progress': 'bg-blue-500/10 text-blue-600',
         completed: 'bg-green-500/10 text-green-600',
-        none:"bg-zinc-500/10 text-dark",
-        daily:"bg-green-500/10 text-green-600",
-        monthly:"bg-orange-500/10 text-orange-600",
+        none: "bg-zinc-500/10 text-dark",
+        daily: "bg-green-500/10 text-green-600",
+        monthly: "bg-orange-500/10 text-orange-600",
         weekly: "bg-indigo-500/10 text-indigo-600",
         yearly: "bg-pink-500/10 text-pink-600",
     }
-    
-    return `<span class="capitalize font-medium text-xs sm:text-sm px-3 py-1.5 rounded-full ${option[status]}">${status}</span>`
+
+    return `<span class="capitalize font-medium text-[13px] px-3 py-1.5 rounded-full ${option[status]}">${status}</span>`
 }
+
 export function getPriorityColor(priority) {
     const option = {
         low: 'bg-orange-500/10 text-orange-600',
         medium: 'bg-green-500/10 text-green-600',
         high: 'bg-red-500/10 text-red-600',
     }
-    return `<span class="capitalize font-medium text-xs sm:text-sm px-3 py-1.5 rounded-full ${option[priority]}">${priority} Priority</span>`
+    return `<span class="capitalize font-medium text-[13px] px-3 py-1.5 rounded-full ${option[priority]}">${priority} Priority</span>`
 }
 
 export function formatTimeAgo(date) {
@@ -49,4 +50,15 @@ export function formatTimeAgo(date) {
     if (months < 12) return `${months} month${months === 1 ? '' : 's'} ago`;
     const years = Math.floor(days / 365);
     return `${years} year${years === 1 ? '' : 's'} ago`;
+}
+
+export function formatDateForInput(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
