@@ -13,8 +13,6 @@
         <%- include('../partials/sidebar') %>
             <%- include('../partials/loader') %>
 
-
-
                 <!-- main section -->
                 <main id="main-content" class="pt-24 mb-19
              text-dark px-4 transition-all duration-300 md:ml-[270px]">
@@ -32,7 +30,6 @@
                     </div>
 
                     <%- include('../partials/add-task') %>
-
 
 
                         <!-- Filters and tasks -->
@@ -117,7 +114,7 @@
                                 </ul>
 
                                 <!-- table view -->
-                                <div class="table-view hidden overflow-x-auto whitespace-nowrap">
+                                <div class="table-view  overflow-x-auto whitespace-nowrap">
                                     <table class="w-full divide-y divide-zinc-500/30">
                                         <thead class="bg-zinc-100 dark:bg-zinc-800">
                                             <tr class="uppercase text-sm">
@@ -154,6 +151,10 @@
                                     <div
                                         class="max-w-full grid place-content-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto transform transition-all duration-300">
                                     </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between gap-3 flex-wrap">
+                                    <div id="product-count" class="text-[16px] font-medium text-gray"></div>
+                                    <div id="pagination"></div>
                                 </div>
                             </div>
                         </section>
@@ -219,7 +220,7 @@
                                         Cancel
                                     </button>
                                     <button type="submit" id="addNoteBtn"
-                                        class="px-3 sm:px-6 py-2.5 bg- orange-500 hover:bg- orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
+                                        class="px-3 sm:px-6 py-2.5 bg-orange-500 hover:bg-orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
                                         <span>Add Note</span>
                                     </button>
                                 </div>
@@ -273,75 +274,9 @@
                                     Cancel
                                 </button>
                                 <button type="submit" id="saveEditedNoteBtn"
-                                    class="px-3 sm:px-6 py-2.5 bg- orange-500 hover:bg- orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
+                                    class="px-3 sm:px-6 py-2.5 bg-orange-500 hover:bg-orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
                                     <span>Save Changes</span>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Note Detail Modal -->
-                    <div id="noteDetailModal"
-                        class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden items-center justify-center p-4  z-50">
-                        <div class="bg-primary rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-
-                            <div class="flex justify-between items-center p-3 sm:p-6 border-b border-zinc-500/30">
-                                <div class="flex items-center space-x-4">
-                                    <div class="p-2 bg- orange-500/10 rounded-md">
-                                        <i class="ri-booklet-line text-2xl text- orange-500"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-[18px] sm:text-xl font-semibold" id="noteDetailTitle">Project
-                                            Brainstorm
-                                        </h3>
-                                        <p class="text-xs sm:text-sm text-zinc mt-[2px]" id="noteDetailDate">Created May
-                                            15,
-                                            2023</p>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="hidNoteDetailsModal()"
-                                    class="p-2 rounded-lg transition-colors">
-                                    <svg class="w-4.5 sm:w-6 h-4.5 sm:h-6 text-zinc hover:text- orange-500" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div class="px-6 py-3 overflow-y-auto flex-grow">
-                                <div class="prose max-w-none break-words whitespace-pre-line mb-6"
-                                    id="noteDetailContent">
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Libero qui architecto quos
-                                    perspiciatis
-                                    aspernatur
-                                    hic, ex pariatur sunt. Corporis, excepturi praesentium ratione debitis sed, quidem,
-                                    corrupti
-                                    magni
-                                    doloribus
-                                    iusto quo aut numquam officia delectus!
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-4  pt-2 text-sm text-zinc">
-                                    <div class="flex items-center space-x-2">
-                                        <i class="far fa-clock"></i>
-                                        <span id="noteDetailLastEdited">Last edited: 1 hour ago</span>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <i class="far fa-user"></i>
-                                        <span id="noteDetailAuthor">Created by: John Doe</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-4  flex flex-col space-y-3 justify-between">
-
-                                <div class="flex justify-end items-center">
-                                    <button onclick="hidNoteDetailsModal()"
-                                        class="px-3 sm:px-6 py-2.5 text-zinc border border-zinc-500/20 hover:border-orange-500 rounded-lg transition-colors font-medium">
-                                        Close
-                                    </button>
-
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -362,129 +297,64 @@
                         </div>
                     </div>
 
-                    <!-- Edit Modal -->
-                    <div id="editModal"
-                        class="hidden fixed bg-black/60 backdrop-blur-md inset-0 z-50 items-center justify-center">
-                        <div
-                            class="bg-primary p-8 rounded-2xl max-h-[80vh] overflow-y-auto w-full max-w-md shadow-lg no-scrollbar backdrop-blur-[20px] animate-fade-in">
-                            <h3 class="text-2xl font-bold mb-6">Edit Your Task</h3>
-                            <div class="space-y-4">
-                                <input id="editTaskText"
-                                    class="w-full p-3 bg-transparent text-dark border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 transition-all"
-                                    placeholder="Task name" />
-                                <textarea id="editTaskDescription" rows="4" name="taskDescription"
-                                    placeholder="Enter your task description here..."
-                                    class="p-3 bg-transparent text-dark  h-full resize-none rounded-lg border-2 border-zinc-500/60 w-full outline-none focus:border-orange-500"></textarea>
-                                <select id="editCategory"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark">
-                                    <option value="work">Work</option>
-                                    <option value="personal">Personal</option>
-                                    <option value="shopping">Shopping</option>
-                                    <option value="health">Health</option>
-                                    <option value="education">Education</option>
-                                    <option value="travel">Travel</option>
-                                    <option value="finance">Finance</option>
-                                    <option value="entertainment">Entertainment</option>
-                                    <option value="other">Others</option>
-                                </select>
-                                <select id="editPriority"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark">
-                                    <option value="high" class="text-red-500">High</option>
-                                    <option value="medium" class="text-blue-500">Medium</option>
-                                    <option value="low" class="text-orange-500">Low</option>
-                                </select>
-                                <input id="editDueDate" type="datetime-local" placeholder="Due Date"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark" />
-
-                                <input id="editStartDate" type="datetime-local" placeholder="Starting Date"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark" />
-
-                                <select id="editRepeat"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark">
-                                    <option value="none" class="text-red-500">No Repeat</option>
-                                    <option value="daily" class="text-blue-500">Daily</option>
-                                    <option value="weekly" class="text-orange-500">Weekly</option>
-                                    <option value="monthly" class="text-green-500">Monthly</option>
-                                    <option value="yearly" class="text-pink-500">Yearly</option>
-                                </select>
-                                <select id="editRemainder"
-                                    class="w-full p-3 bg-primary border-2 border-zinc-500/30 rounded-lg outline-none focus:border-orange-500 text-dark">
-                                    <option value="0">No Reminder</option>
-                                    <option value="15">15 minutes before</option>
-                                    <option value="30">30 minutes before</option>
-                                    <option value="45">45 minutes before</option>
-                                    <option value="60">1 hour before</option>
-                                    <option value="300">5 hours before</option>
-                                    <option value="1440">1 day before</option>
-                                </select>
-                            </div>
-                            <div class="flex justify-end gap-4 mt-6">
-                                <button onclick="closeEditModal()"
-                                    class="px-6 py-2 bg-zinc-600 cursor-pointer text-white rounded-lg hover:bg-zinc-700 transition-colors">
-                                    Cancel
-                                </button>
-                                <button onclick="saveEditedTask()"
-                                    class="px-6 py-2 bg- orange-500 cursor-pointer text-white rounded-lg hover:bg- orange-600 transition-colors">
-                                    Save
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Subtask Modal -->
                     <div id="subtaskModal"
-                        class="hidden backdrop-blur-md fixed bg-black/60 inset-0 z-40 items-center justify-center">
+                        class="hidden backdrop-blur-md fixed bg-black/60 inset-0 z-50 items-center justify-center">
                         <div class="bg-primary mx-3 p-3 sm:p-8 rounded-2xl w-full max-w-md shadow-lg animate-fade-in">
-                            <h3 class="text-2xl font-bold mb-6">Break Down Task</h3>
+                            <h3 class="text-2xl text-dark font-bold mb-6">Break Down Task</h3>
                             <p id="parentTaskText"
-                                class="mb-4 border-l-4 py-1.5 px-3 border-orange-500 text-[18px] text-zinc font-semibold">
+                                class="mb-4 bg-orange-500/10 border-l-4 py-1.5 px-3 border-orange-500 text-[18px] text-dark font-semibold">
+                                No parent task
                             </p>
 
                             <div id="subtasksList"
                                 class="space-y-3 max-h-[300px] sm:max-h-[350px] overflow-y-auto mb-4">
                             </div>
 
-                            <div class="flex items-center gap-2 mb-6">
-                                <input id="newSubtaskInput" type="text" placeholder="Add a subtask..." required
-                                    class="flex-grow p-3 bg-transparent text-dark border-2 border-orange-500/20 rounded-lg focus:outline-none focus:border-orange-500 transition-all" />
-                                <button onclick="speak('newSubtaskInput')"
-                                    class="p-3 bg-gradient-to-tr from- orange-500 to-indigo-500 hover:from-indigo-500 hover:to- orange-500 cursor-pointer text-white rounded-lg hover:bg- orange-600 transition-colors">
-                                    <i class="ri-mic-ai-line"></i>
-                                </button>
-                            </div>
+                            <form id="subtaskForm" onsubmit=" return false">
+                                <div class="flex items-center gap-2 mb-6">
+                                    <input id="newSubtaskInput" type="text" name="text" placeholder="Add a subtask..."
+                                        required
+                                        class="flex-grow p-3 bg-transparent text-dark border border-zinc-500/30 rounded-lg focus:outline-none focus:border-orange-500 transition-all" />
 
-                            <div class="flex justify-end gap-4 mt-6">
-                                <button onclick="closeSubtaskModal()"
-                                    class="px-6 py-2 border-2 border-zinc-500/40 cursor-pointer hover:text-white rounded-lg hover:bg-zinc-700 transition-colors">
-                                    Cancel
-                                </button>
-                                <button onclick="saveSubtasks()"
-                                    class="px-6 py-2 bg- orange-500 cursor-pointer text-white rounded-lg hover:bg- orange-600 transition-colors">
-                                    Save
-                                </button>
-                            </div>
+                                </div>
+
+                                <div class="flex justify-end gap-4 mt-6">
+                                    <button
+                                        class="closeSubtaskModalBtn px-6 py-2 border-2 border-zinc-500/40 cursor-pointer text-dark hover:text-white rounded-lg hover:bg-zinc-700 transition-colors">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" id="submitSubtaskBtn"
+                                        class="px-6 py-2 bg-orange-500 cursor-pointer text-white rounded-lg hover:bg-orange-600 transition-colors">
+                                        Save
+                                    </button>
+                                </div>
+                            </form>
+
                         </div>
                     </div>
 
                     <!-- edit subtask modal -->
                     <div id="editSubtaskModal"
                         class="backdrop-blur-md hidden fixed bg-black/60 inset-0 z-50 items-center justify-center">
-                        <div class="bg-primary mx-3 p-4 sm:p-8 rounded-2xl w-full max-w-md shadow-lg animate-fade-in">
-                            <h3 class="text-2xl font-bold mb-6">Edit Subtask</h3>
-                            <textarea
-                                class="w-full h-24 border-2 border-orange-500/20 resize-none rounded-lg p-3 outline-0 focus:border-orange-600"
-                                id="editSubtaskInput" placeholder="Edit your subtask here..." required></textarea>
+                        <div class="bg-primary mx-3 p-4 sm:p-6 rounded-2xl w-full max-w-md shadow-lg animate-fade-in">
+                            <form id="updateSubtaskForm">
+                                <h3 class="text-2xl font-bold mb-6">Edit Subtask</h3>
+                                <textarea name="text"
+                                    class="w-full h-24 border border-zinc-500/30 resize-none rounded-lg p-3 outline-0 focus:border-orange-600"
+                                    id="editSubtaskInput" placeholder="Edit your subtask here..." required></textarea>
 
-                            <div class="flex justify-end gap-4 mt-6">
-                                <button onclick="closeEditSubtaskModal()"
-                                    class="px-4 sm:px-6 py-1.5 sm:py-2 border-2 border-zinc-500/40 cursor-pointer hover:text-white rounded-lg hover:bg-zinc-700 transition-colors">
-                                    Cancel
-                                </button>
-                                <button onclick="saveEditedSubtask()"
-                                    class="px-4 sm:px-6 py-1.5 sm:py-2 bg- orange-500 cursor-pointer text-white rounded-lg hover:bg- orange-600 transition-colors">
-                                    Save Changes
-                                </button>
-                            </div>
+                                <div class="flex justify-end gap-2 mt-6">
+                                    <button type="submit" id="updateSubtaskBtn"
+                                        class="px-4 sm:px-6 py-1.5 sm:py-2 bg-orange-500 cursor-pointer text-white rounded-lg hover:bg-orange-600 transition-colors">
+                                        Save Changes
+                                    </button>
+                                    <button type="button"
+                                        class="closeUpdateSubtaskModal px-4 sm:px-6 py-1.5 sm:py-2 border-2 border-zinc-500/40 cursor-pointer hover:text-white rounded-lg hover:bg-zinc-700 transition-colors">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -580,7 +450,7 @@
                                 </div>
 
                                 <div
-                                    class="p-3 bg- orange-400/10 rounded-xl border-l-4 duration-300 border-orange-500 hover:bg- orange-500/10">
+                                    class="p-3 bg-orange-400/10 rounded-xl border-l-4 duration-300 border-orange-500 hover:bg-orange-500/10">
                                     <div>
                                         <p class="text-xs sm:text-[16.5px] text- orange-500 mb-2  font-semibold"> <i
                                                 class="ri-calendar-line"></i>&nbsp; CREATED AT</p>
@@ -606,7 +476,8 @@
                                     class="p-3 bg-red-400/10 rounded-xl border-l-4 duration-300 border-red-500 hover:bg-red-500/10">
                                     <div>
                                         <p class="text-xs uppercase sm:text-[16.5px] text-red-500 mb-2  font-semibold">
-                                            <i class="ri-calendar-line"></i>&nbsp; Total duration</p>
+                                            <i class="ri-calendar-line"></i>&nbsp; Total duration
+                                        </p>
                                         <p id="taskDuration" class="text-xs sm:text-sm  font-medium">9 hours, 12 minutes
                                         </p>
                                     </div>
@@ -666,7 +537,7 @@
                                     <span>Edit Task</span>
                                 </button>
                                 <button id="manageSubtasksBtn" onclick="breakdownTask(0); closeTaskDetailsModal()"
-                                    class="px-3 py-2 bg- orange-500 text-white rounded-lg hover:bg- orange-600 transition-colors hidden items-center gap-2 shadow-md hover:shadow-lg">
+                                    class="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors hidden items-center gap-2 shadow-md hover:shadow-lg">
                                     <span>Add Subtask</span>
                                 </button>
                                 <button onclick="closeTaskDetailsModal()"
@@ -680,6 +551,7 @@
                 </section>
 
 
+                <!-- Delete Task Modal -->
                 <div id="deleteTaskModal"
                     class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
                     <div class="bg-card rounded-lg shadow-xl w-full max-w-md">
