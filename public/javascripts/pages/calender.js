@@ -49,7 +49,7 @@ function createDateElement(date) {
     const isToday = date.getTime() === today.getTime();
     const dateTasks = getTasksForDate(date);
     const element = document.createElement("div");
-    element.className = `relative border hover:bg-[var(--stat-bg)] p-2 transition-all duration-300 cursor-pointer ${isToday ? "border-purple-500 bg-[var(--stat-bg)]" : "border-zinc-500/40 bg-[var(--primary-bg)]"} min-h-[240px] flex flex-col`;
+    element.className = `relative border hover:bg-[var(--stat-bg)] p-2 transition-all duration-300 cursor-pointer ${isToday ? "border-purple-500 bg-[var(--stat-bg)]" : "border-zinc-500/40 bg-[var(--primary-bg)]"} min-h-[170px] flex flex-col`;
 
     const dateHeader = document.createElement("div");
     dateHeader.className = `text-right pr-3 font-semibold text-[18px] mb-2 ${isToday ? "text-purple-500" : ""}`;
@@ -59,7 +59,7 @@ function createDateElement(date) {
     indicatorsContainer.className = "flex flex-wrap gap-1 mt-auto justify-center";
 
 
-    dateTasks.slice(0, 3).forEach((task) => {
+    dateTasks.slice(0, 2).forEach((task) => {
         const indicator = document.createElement("div");
         indicator.className = `mb-1 w-full line-clamp-1 border-l-3 sm:text-sm rounded px-2 py-[4px] ${task.status === "completed" ? "bg-green-500/10 text-green-500 border-green-500" : task.status === 'in-progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500'}`;
 
@@ -78,10 +78,10 @@ function createDateElement(date) {
 
     element.onclick = () => handleDateClick(date, dateTasks);
 
-    if (dateTasks.length > 3) {
+    if (dateTasks.length > 2) {
         const moreTask = document.createElement('div');
         moreTask.className = 'w-full text-sm sm:text-[16px] font-medium px-2 py-[2px] bg-orange-500/10 text-orange-600 rounded';
-        moreTask.innerHTML = `+${dateTasks.slice(3).length} more`;
+        moreTask.innerHTML = `+${dateTasks.slice(2).length} more`;
         element.appendChild(moreTask);
     }
     document.getElementById("calendarDates").appendChild(element);
@@ -139,7 +139,6 @@ function getTaskStatus(status) {
 }
 
 function handleDateClick(date, tasks) {
-    console.log(date, tasks);
     const modalDate = document.getElementById("modalDate");
     let updatedModalDate = date.toLocaleDateString("en-US", {
         weekday: "long",
@@ -201,7 +200,7 @@ function handleDateClick(date, tasks) {
                     ).format(new Date(task.dueDate));
 
                     return `
-<div class="px-3 py-3 border-l-4 rounded-lg hover:shadow-lg transform hover:-translate-y-1 ${getPriorityBorder(task.priority)} duration-300 mb-4">
+<div onClick="window.location.href='/task/${task.id}'" class="px-3 py-3 border-l-4 rounded-lg hover:shadow-lg transform hover:-translate-y-1 cursor-pointer ${getPriorityBorder(task.priority)} duration-300 mb-4">
   <div class="flex items-start gap-3">
     <div class="flex-1">
       <div class="flex mb-1 justify-between items-center">
