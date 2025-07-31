@@ -1,4 +1,4 @@
-import { addNewTask, deleteTaskById, getAllTasksDetailsByUserId, getTaskById, groupTasksWithSubtasks, updateSubtasksStatus, updateTaskStatus } from "../services/taskService.js";
+import { addNewTask, deleteTaskById, getAllTasksDetailsByUserId, getTaskById, updateSubtasksStatus, updateTaskById, updateTaskStatus } from "../services/taskService.js";
 import { addTaskSchema } from "../validators/taskValidators.js";
 
 // get task page
@@ -50,8 +50,7 @@ export const addTask = async (req, res) => {
 
             return res.status(400).json({
                 success: false,
-                error: errorMessage,
-                message: errorMessage
+                message: errorMessage,
             });
         }
 
@@ -67,7 +66,7 @@ export const addTask = async (req, res) => {
         console.error('Error adding task:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal Server Error'
+            message: 'Internal Server Error'
         })
     }
 };
@@ -87,10 +86,9 @@ export const getAllTasks = async (req, res) => {
         });
 
         const totalPages = Math.ceil(totalCount / 10);
-        const tasksWithSubtasks = groupTasksWithSubtasks(tasks);
         res.status(200).json({
             success: true,
-            tasks: tasksWithSubtasks,
+            tasks,
             totalPages,
             currentPage: Number(page),
         });
@@ -98,7 +96,7 @@ export const getAllTasks = async (req, res) => {
         console.error('Error fetching tasks:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal Server Error',
+            message: 'Internal Server Error',
         });
     }
 };
@@ -116,7 +114,29 @@ export const getTaskDetailsApi = async (req, res) => {
         console.error('Error fetching task details:', error);
         res.status(500).json({
             success: false,
-            error: 'Internal Server Error',
+            message: 'Internal Server Error',
+        });
+    }
+}
+
+// update task
+export const updateTask = async (req, res) => {
+    try {
+        const taskId = Number(req.params.id);
+        if (!taskId) return res.status(400).json({ success: false, message: 'Invalid task id' });
+        const result = addTaskSchema.safeParse(req.body);
+        const data = result.data;
+
+        await updateTaskById({ taskId, userId: req.user.id, ...data });
+        res.status(200).json({
+            success: true,
+            message: 'Task updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating task:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal Server Error',
         });
     }
 }
@@ -125,18 +145,17 @@ export const getTaskDetailsApi = async (req, res) => {
 export const toggleTaskStatus = async (req, res) => {
     try {
         const taskId = Number(req.params.id);
-        const { tasks: task } = await getTaskById(taskId);
+        const task = await getTaskById(taskId);
         if (!task) {
             return res.status(404).json({ success: false, message: 'Task not found' });
         }
 
         const newStatus = task.status === 'completed' ? 'pending' : 'completed';
         const completedAt = newStatus === 'completed' ? new Date() : null;
-        const isCompleting = task.status !== 'completed';
+
         await updateTaskStatus(taskId, { status: newStatus, completedAt });
-        if (isCompleting) {
-            await updateSubtasksStatus(taskId, { status: newStatus, completedAt });
-        }
+
+        await updateSubtasksStatus(taskId, { status: newStatus, completedAt });
 
         res.status(200).json({
             success: true,
@@ -153,7 +172,7 @@ export const toggleTaskStatus = async (req, res) => {
 export const deleteTask = async (req, res) => {
     try {
         const taskId = Number(req.params.id);
-        if(!taskId) return res.status(400).json({ success: false, message: 'Invalid task id' });
+        if (!taskId) return res.status(400).json({ success: false, message: 'Invalid task id' });
         await deleteTaskById(taskId);
         res.status(200).json({ success: true, message: 'Task deleted successfully' });
     } catch (error) {
