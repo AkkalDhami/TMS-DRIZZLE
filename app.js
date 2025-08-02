@@ -10,6 +10,7 @@ import { taskRoutes } from "./routes/taskRoutes.js";
 import { subtaskRoutes } from "./routes/subtaskRoutes.js";
 
 import { verifyAuthentication } from "./middlewares/authMiddleware.js";
+import { dashboardRoutes } from "./routes/dashboardRoutes.js";
 
 const app = express();
 
@@ -40,9 +41,14 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/", (req, res) => {
+  res.redirect("/task");
+})
+
 app.use("/auth", authRoutes);
 app.use("/task", taskRoutes);
 app.use("/task/subtask", subtaskRoutes);
+app.use("/dashboard", dashboardRoutes);
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, () => {
