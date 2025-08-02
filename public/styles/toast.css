@@ -13,7 +13,6 @@
   border-radius: 4px;
   padding: 16px 17px;
   margin-bottom: 10px;
-  background: #f6f5f5;
   justify-content: space-between;
   animation: show_toast 0.3s ease forwards;
 }
@@ -91,13 +90,7 @@
   font-size: 1.07rem;
   margin-left: 12px;
 }
-.toast i:last-child {
-  color: var(--text-gray);
-  cursor: pointer;
-  &:hover {
-    color: var(--text-color);
-  }
-}
+
 
 @media screen and (max-width: 830px) {
   #toastContainer {

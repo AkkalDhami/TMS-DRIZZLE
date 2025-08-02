@@ -10,7 +10,6 @@ import { deleteTask } from "../utils/delete-task.js";
 import { togglesubtaskStatus } from "../utils/toggle-subtask.js";
 
 let page = 1;
-let currentPage = 1;
 const limit = 10;
 const paginationDiv = document.getElementById('pagination');
 
@@ -70,8 +69,8 @@ toDoForm.addEventListener("submit", async (e) => {
             "success"
         );
         toDoForm.reset();
-        toDoForm.action = ""; //? Reset form action
-        toDoForm.method = "POST"; //? Reset method
+        toDoForm.action = "";
+        toDoForm.method = "POST";
         loadTasks();
         closeTaskModal();
     } catch (error) {
@@ -80,13 +79,10 @@ toDoForm.addEventListener("submit", async (e) => {
     } finally {
         addTaskBtn.disabled = false;
         addTaskBtn.innerHTML = `Save Task`;
+        toDoForm.reset();
     }
 });
 
-fetch("/task/api/all")
-    .then((res) => res.json())
-    .then((data) => console.log(data))
-    .catch((err) => console.error(err));
 
 const filterButtons = document.querySelectorAll(".filter-btn");
 const sortSelect = document.getElementById("sortSelect");
@@ -94,11 +90,10 @@ const clearBtn = document.getElementById("clearFiltersBtn");
 
 let currentStatus = "";
 let currentSort = "";
-let currentView = "tableView";
+let currentView = "listView";
+let currentOrder = "asc";
 
 loadTasks();
-
-
 function getBorderColor(status) {
     switch (status) {
         case "pending":
@@ -126,6 +121,7 @@ function closeTaskModal() {
     const taskModal = document.getElementById("taskModal");
     taskModal.classList.remove("flex");
     taskModal.classList.add("hidden");
+    toDoForm.reset();
 }
 
 //? open subtask modal
@@ -183,19 +179,24 @@ document.querySelectorAll(".closeTaskModal").forEach((btn) => {
 
 document.querySelectorAll("#taskDisplayBtns button").forEach((btn) => {
     btn.addEventListener("click", () => {
-        //? Update current view
         currentView = btn.dataset.view;
-
-        //? Toggle active class
+        if (currentView === 'listView') {
+            
+            document.getElementById('taskLists').classList.remove('hidden');
+            document.querySelector('.table-view').classList.add('hidden');
+        } else {
+            document.querySelector('#taskLists').classList.add('hidden');
+            document.querySelector('.table-view').classList.remove('hidden');
+        }
         document
             .querySelectorAll("#taskDisplayBtns button")
             .forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
 
-        //? Reload tasks in new format
         loadTasks();
     });
 });
+
 
 document.querySelectorAll(".closeDeleteTaskModalBtn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -262,8 +263,9 @@ clearBtn.addEventListener("click", () => {
 });
 
 //? Load and display tasks
-async function loadTasks(page = 1) {
-    currentPage = page;
+async function loadTasks(p = 1) {
+    page = p;
+
     const params = new URLSearchParams();
     if (currentStatus) params.append("status", currentStatus);
     if (currentSort) {
@@ -271,14 +273,20 @@ async function loadTasks(page = 1) {
         params.append("order", currentOrder);
     }
     params.append("page", page);
-
+    params.append('limit', limit);
     try {
         const res = await fetch(`/task/api/all?${params.toString()}`);
         const data = await res.json();
 
         if (data.success) {
             renderTasks(data.tasks);
-            renderPagination(data.totalPages, data.tasks.length);
+            updateStats(
+                data.completedTasks,
+                data.pendingTasks,
+                data.inProgressTasks,
+                data.totalCount
+            );
+            renderPagination(data.totalPages, data.totalTasks);
         } else {
             console.error("Failed to fetch tasks:", data.error);
         }
@@ -365,14 +373,24 @@ function renderTasks(tasks) {
                                     </div>
                                     <p class="line-clamp-1 text-sm sm:text-base text-zinc my-1">${description}</p>
                                     <div class="flex flex-wrap text-xs sm:text-sm items-center justify-between">
-                                        <div class="flex flex-wrap text-xs sm:text-sm items-center gap-4">
+                                        <div class="flex flex-wrap text-xs sm:text-sm items-center gap-1 sm:gap-4">
                                             <span
                                                 class="flex items-center text-zinc gap-1 py-1 rounded-full font-medium whitespace-nowrap">
-                                                Due: ${formattedDate(dueDate)}
+                                                 <i class="ri-calendar-line mr-[2px]"></i> Due: ${formattedDate(dueDate)}
                                             </span>
-                                            <span class="font-medium capitalize text-red-500">
-                                                <i class="ri-flag-line mr-[2px]"></i>
-                                                ${priority} Priority
+                                            <span class="font-medium capitalize ">
+                                              |
+                                            </span>
+                                            <span class="font-medium capitalize ">
+                                            <i class="ri-flag-line mr-[2px]"></i>
+                                            ${priority} Priority
+                                            </span>
+                                            <span class="font-medium capitalize ">
+                                              |
+                                            </span>
+                                            <span class="font-medium capitalize ">
+                                            <i class="ri-node-tree mr-[2px]"></i>
+                                                ${category} Category
                                             </span>
                                         </div>
                                         <div class="flex items-center gap-1">
@@ -407,7 +425,7 @@ function renderTasks(tasks) {
                             <div class="flex items-center flex-wrap gap-2 justify-between mt-2">
                                 <div class="flex items-center gap-1">
                                     <button data-taskid="${id}"
-                                        class="addSubTask text-purple-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-purple-500/10 hover:bg-purple-500/15 transition-colors">
+                                        class="addSubTask text-orange-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md bg-orange-500/10 hover:bg-orange-500/15 transition-colors">
                                         <i class="addSubTask ri-list-check-2" data-taskid="${id}"></i>
                                     </button>
                                     <button data-taskid="${id}"
@@ -471,7 +489,8 @@ function renderTasks(tasks) {
 
             container.appendChild(li);
         });
-    } else {
+    }
+    if (currentView === "tableView") {
         const container = document.getElementById("tasksTableView");
         container.innerHTML = "";
 
@@ -499,12 +518,12 @@ function renderTasks(tasks) {
             } = task;
             const row = document.createElement("tr");
             row.className =
-                "task-text hover:bg-zinc-100 hover:dark:bg-zinc-800 duration-300";
+                "task-text hover:bg-zinc-100 hover:dark:bg-[#091121] duration-300";
             row.innerHTML = `
           <td class="py-4 px-4">
            <div class="flex items-center gap-3">
                 <input ${status === "completed" ? "checked" : ""} type="checkbox" data-taskid="${id}" class="task-toggle-status w-3.5 h-3.5 cursor-pointer accent-blue-500">
-                <span class="text-sm font-medium ${status === "completed" ? "line-through text-gray" : "text-dark"}">${title.length > 20 ? title.slice(0, 20) + "..." : title}</span>
+                <span onclick="window.location.href='/task/${id}'" class="text-sm hover:text-green-500 cursor-pointer font-medium ${status === "completed" ? "line-through text-gray" : "text-dark"}">${title.length > 20 ? title.slice(0, 20) + "..." : title}</span>
            </div>
           </td>
           <td class="py-4 px-4">${description.length > 20 ? description.slice(0, 20) + "..." : description}</td>
@@ -512,7 +531,12 @@ function renderTasks(tasks) {
           <td class="py-4 px-4">${getPriorityColor(priority)}</td>
           <td class="py-4 px-4">${statusBadage(status)}</td>
           <td class="py-4 px-4 capitalize">${statusBadage(repeat)}</td>
-          <td class="py-4 px-4 capitalize">
+          <td class="py-4 px-4 text-end capitalize">
+                                 <button data-taskid="${id}"
+                                        class="addSubTask text-orange-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md hover:bg-orange-500/10 transition-colors"
+                                        title="Edit task">
+                                        <i class="addSubTask ri-list-check-2" data-taskid="${id}"></i>
+                                    </button>
                                  <button data-taskid="${id}"
                                         class="editTask text-blue-500 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-md hover:bg-blue-500/10 transition-colors"
                                         title="Edit task">
@@ -637,7 +661,8 @@ function updateFormElements(taskId) {
             toDoForm.action = `/task/update/${taskId}`;
             toDoForm.method = "PATCH";
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error(err))
+
 }
 
 //? subtask handlers
@@ -727,6 +752,7 @@ document.addEventListener("click", async (e) => {
 async function addSubTask(taskId) {
     const subTaskForm = document.getElementById("subtaskForm");
     const formData = new FormData(subTaskForm);
+    if (!formData.get("text")) return showToast("Subtask title is required", "error");
     const payload = Object.fromEntries(formData);
 
     try {
@@ -831,14 +857,14 @@ async function updateSubTask(subtaskId) {
 
 //? pagination
 
-function renderPagination(totalPages, totalUsers) {
+function renderPagination(totalPages, totalTasks) {
     paginationDiv.innerHTML = '';
     if (totalPages <= 1) return;
 
     const createBtn = (label, disabled = false, isActive = false, onClick = null) => {
         const btn = document.createElement('button');
         btn.innerHTML = label;
-        btn.className = `mx-1 px-3 py-1 rounded text-sm ${isActive ? 'bg-green-500 text-white'
+        btn.className = `mx-1 px-3 py-1 rounded text-sm ${isActive ? 'bg-orange-600 text-white'
             : disabled ? 'bg-zinc-500/10 text-dark cursor-not-allowed'
                 : 'bg-zinc-500/20 hover:bg-zinc-500/30'
             }`;
@@ -869,6 +895,8 @@ function renderPagination(totalPages, totalUsers) {
         paginationDiv.appendChild(createBtn(`${page - 1}`, false, false, () => loadTasks(page - 1)));
     }
 
+
+
     // Current
     paginationDiv.appendChild(createBtn(`${page}`, false, true));
 
@@ -893,10 +921,15 @@ function renderPagination(totalPages, totalUsers) {
             }
         })
     );
+}
 
-    const start = (page - 1) * limit + 1;
-    const end = Math.min(page * limit, totalUsers);
-    const rangeText = `Showing ${start}–${end} of ${totalUsers} results`;
 
-    document.getElementById('product-count').textContent = rangeText;
+//? update stats
+
+function updateStats(completedTasks, pendingTasks, inProgressTasks, totalTasks) {
+
+    document.getElementById('totalTasksCount').textContent = totalTasks;
+    document.getElementById('completedTasksCount').textContent = completedTasks;
+    document.getElementById('pendingTasksCount').textContent = pendingTasks;
+    document.getElementById('inProgressTasksCount').textContent = inProgressTasks;
 }
