@@ -29,11 +29,11 @@ export const getProfile = async (req, res) => {
     if (!req.user) return res.redirect('/auth/login');
     const user = await findUserById(req.user.id);
     if (!user) return res.redirect('/auth/login');
-    console.log(user)
     res.render('auth/profile', {
         title: 'Profile Page',
         user,
-        hasPassword: Boolean(user.password)
+        hasPassword: Boolean(user.password),
+        location: '/profile'
     });
 }
 
@@ -44,6 +44,7 @@ export const getEditProfile = async (req, res) => {
         title: 'Edit Profile Page',
         user,
         errors: req.flash('errors'),
+        location: '/profile'
     });
 }
 
@@ -93,29 +94,13 @@ export const postEditProfile = async (req, res) => {
         return res.redirect(`/auth/edit-profile/${req.user.id}`);
     }
     const { name } = data;
-    if (!req.file) {
-        req.flash('errors', 'Avatar is required');
-        return res.status(400).send('profile avatar is required');
-    }
+
     const updatedUser = await findUserById(req.user.id);
     if (!updatedUser) return res.redirect('/auth/login');
-    if (req.file) {
-        const oldUrl = updatedUser.avatarUrl;
-        if (oldUrl) {
-            const filePath = path.join(process.cwd(), 'public', oldUrl);
-            try {
-                await fs.unlink(filePath);
-            } catch (error) {
-                console.error('Error deleting file:', error);
-            }
-        }
-    }
-    const filename = req.file ? `/uploads/${req.file.filename}` : null;
 
     updateUserName({
         userId: updatedUser.id,
         name,
-        avatarUrl: filename
     });
 
 
@@ -143,7 +128,6 @@ export const getVerifyEmailToken = async (req, res) => {
     if (error) return res.redirect('/auth/verify-email');
 
     const token = await findVerificationEmailToken(data);
-    console.log("token: ", token);
     if (!token) return res.send('Invalid token');
 
     await verifyUserEmailAndUpdate(token.email);
@@ -229,7 +213,6 @@ export const getGoogleLoginCallbackPage = async (req, res) => {
             userId: user.id,
             provider: "google",
             providerAccountId: googleUserId,
-            avatarUrl: picture
         });
     }
 
@@ -240,7 +223,6 @@ export const getGoogleLoginCallbackPage = async (req, res) => {
             email,
             provider: "google",
             providerAccountId: googleUserId,
-            avatarUrl: picture,
             email_verified
         });
     }
@@ -308,8 +290,7 @@ export const getGithubLoginCallbackPage = async (req, res) => {
     }
 
     const githubUser = await githubUserResponse.json();
-    console.log(githubUser)
-    const { id: githubUserId, name, avatar_url } = githubUser;
+    const { id: githubUserId, name } = githubUser;
 
     const githubEmailResponse = await fetch(`https://api.github.com/user/emails`, {
         headers: {
@@ -340,7 +321,6 @@ export const getGithubLoginCallbackPage = async (req, res) => {
             userId: user.id,
             provider: "github",
             providerAccountId: githubUserId,
-            avatarUrl: avatar_url
         });
     }
 
@@ -351,12 +331,10 @@ export const getGithubLoginCallbackPage = async (req, res) => {
             email,
             provider: "github",
             providerAccountId: githubUserId,
-            avatarUrl: avatar_url
         });
     }
 
     await autenticateUser({ req, res, user });
-    console.log(user)
     res.redirect("/");
 }
 
@@ -489,10 +467,9 @@ export const postForgetPassword = async (req, res) => {
         return res.redirect('/auth/reset-password');
     }
     const { email } = data;
-  
+
     const user = await getUserByEmail(email);
-  
-    console.log("user: ", user);
+
 
     const resetPasswordLink = await createResetPasswordLink({ userId: user?.id, }).catch(console.error);
 
@@ -529,6 +506,5 @@ export const postResetPassword = async (req, res) => {
     const hashedPasswd = await hashedPassword(newPassword);
     await updatePassword(user.id, hashedPasswd);
 
-    console.log(user)
     res.redirect('/auth/login');
 }
