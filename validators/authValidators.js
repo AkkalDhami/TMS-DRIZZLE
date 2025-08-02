@@ -43,10 +43,6 @@ export const registerSchema = zod.object({
         })
 });
 
-//   title: 'asdf',
-//   repeat: 'none',
-//   remainder: '0',
-//   description: 'asdfasdfsdf'
 
 export const loginSchema = zod.object({
     email: emailSchema,
