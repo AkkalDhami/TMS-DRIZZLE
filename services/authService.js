@@ -265,11 +265,11 @@ export const sendNewVerifyEmailLink = async ({ userId, email }) => {
     }).catch(console.error);
 }
 
-export const updateUserName = async ({ userId, name, avatarUrl }) => {
-  
+export const updateUserName = async ({ userId, name }) => {
+
     await db
         .update(usersTable)
-        .set({ name, avatarUrl })
+        .set({ name })
         .where(eq(usersTable.id, userId));
 }
 
@@ -355,15 +355,12 @@ export async function getUserWithOauthId({ email, provider }) {
 export async function linkUserWithOauth({
     userId,
     provider,
-    providerAccountId,
-    avatarUrl
+    providerAccountId
 }) {
-    console.log("avatarUrl2: ", avatarUrl);
     await db.insert(oauthAccountsTable).values({
         userId,
         provider,
         providerAccountId,
-        avatarUrl
     });
 }
 
@@ -372,10 +369,8 @@ export async function createUserWithOauth({
     email,
     provider,
     providerAccountId,
-    avatarUrl,
     email_verified
 }) {
-    console.log("avatarUrl: ", avatarUrl);
     const user = await db.transaction(async (trx) => {
         const [user] = await trx
             .insert(usersTable)
@@ -383,7 +378,6 @@ export async function createUserWithOauth({
                 email,
                 name,
                 isEmailValid: email_verified || true,
-                avatarUrl
             })
             .$returningId();
 
@@ -400,7 +394,6 @@ export async function createUserWithOauth({
             isEmailValid: email_verified,
             provider,
             providerAccountId,
-            avatarUrl
         };
     });
 

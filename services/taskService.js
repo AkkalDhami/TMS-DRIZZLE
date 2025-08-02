@@ -24,7 +24,7 @@ export const getAllTasksDetailsByUserId = async ({
     status,
     sort = 'createdAt',
     order = 'desc',
-    limit = 10,
+    limit,
     offset = 0,
 }) => {
     const conditions = [eq(tasksTable.userId, userId)];
@@ -167,6 +167,7 @@ export const findSubtaskById = async (subtaskId) => {
         .where(eq(subTasksTable.id, subtaskId));
 }
 
+
 export const updateSubtaskStatusById = async ({ subtaskId, isCompleted, completedAt }) => {
     return db
         .update(subTasksTable)
@@ -192,4 +193,32 @@ export const getAllSubtasksByTaskId = async (taskId) => {
         .select()
         .from(subTasksTable)
         .where(eq(subTasksTable.taskId, taskId));
+}
+
+export const getAllTasksByUserId = async (userId) => {
+    return db
+        .select()
+        .from(tasksTable)
+        .where(eq(tasksTable.userId, userId));
+}
+
+export const getCompletedTasksByUserId = async (userId) => {
+    return db
+        .select()
+        .from(tasksTable)
+        .where(and(eq(tasksTable.userId, userId), eq(tasksTable.status, 'completed')));
+}
+
+export const getPendingTasksByUserId = async (userId) => {
+    return db
+        .select()
+        .from(tasksTable)
+        .where(and(eq(tasksTable.userId, userId), eq(tasksTable.status, 'pending')));
+}
+
+export const getInProgressTasksByUserId = async (userId) => {
+    return db
+        .select()
+        .from(tasksTable)
+        .where(and(eq(tasksTable.userId, userId), eq(tasksTable.status, 'in progress')));
 }
