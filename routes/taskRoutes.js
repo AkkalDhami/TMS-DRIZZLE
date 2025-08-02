@@ -7,6 +7,7 @@ const router = Router();
 
 router.get('/', isAuthenticated, getTaskPage);
 router.get('/calender', isAuthenticated, getCalenderPage);
+
 router.get('/api/all', isAuthenticated, getAllTasks);
 router.get('/:id', isAuthenticated, getTaskDetailsPage);
 router.get('/api/task-details/:id', isAuthenticated, getTaskDetailsApi);
