@@ -1,4 +1,4 @@
-import { addSubtaskByTaskId, deleteSubtaskById, findSubtaskById, updateSubtaskById, updateSubtaskStatusById } from "../services/taskService.js";
+import { addSubtaskByTaskId, deleteSubtaskById, findSubtaskById, getTaskById, updateSubtaskById, updateSubtaskStatusById, updateTaskStatus } from "../services/taskService.js";
 
 //? GET SUBTASK DETAILS
 export const getSubtaskDetails = async (req, res) => {
@@ -27,6 +27,7 @@ export const addSubtask = async (req, res) => {
             message: 'Invalid task id'
         });
         await addSubtaskByTaskId({ text: req.body.text, taskId });
+        await updateTasksStatus(taskId);
         res.status(200).json({
             success: true,
             message: 'Subtask added successfully'
@@ -37,6 +38,22 @@ export const addSubtask = async (req, res) => {
             success: false,
             message: error.message || 'Internal Server Error'
         });
+    }
+}
+
+async function updateTasksStatus(taskId) {
+    const task = await getTaskById(taskId);
+    const anyCompletedSubtask = task?.subtasks.some((subtask) => subtask.isCompleted === true);
+    const allCompletedSubtasks = task?.subtasks.every((subtask) => subtask.isCompleted === true);
+
+    if (anyCompletedSubtask) {
+        await updateTaskStatus(taskId, { status: 'in progress', completedAt: null });
+    }
+    if (allCompletedSubtasks) {
+        await updateTaskStatus(taskId, { status: 'completed', completedAt: new Date() });
+    }
+    if (!anyCompletedSubtask && !allCompletedSubtasks) {
+        await updateTaskStatus(taskId, { status: 'pending', completedAt: null });
     }
 }
 
@@ -59,7 +76,9 @@ export const toggleSubtaskStatus = async (req, res) => {
 
         const isCompleted = !subtask.isCompleted;
 
-        await updateSubtaskStatusById({ subtaskId, isCompleted });
+        await updateSubtaskStatusById({ subtaskId, isCompleted, completedAt: isCompleted ? new Date() : null });
+
+        await updateTasksStatus(subtask.taskId);
 
         res.status(200).json({
             success: true,
@@ -86,6 +105,7 @@ export const deleteSubtask = async (req, res) => {
 
         await deleteSubtaskById(subtaskId);
 
+        await updateTasksStatus(subtaskId);
         res.status(200).json({
             success: true,
             message: 'Subtask deleted successfully'

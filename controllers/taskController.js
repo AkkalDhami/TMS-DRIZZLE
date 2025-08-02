@@ -1,4 +1,4 @@
-import { addNewTask, deleteTaskById, getAllTasksDetailsByUserId, getTaskById, updateSubtasksStatus, updateTaskById, updateTaskStatus } from "../services/taskService.js";
+import { addNewTask, deleteTaskById, getAllTasksByUserId, getAllTasksDetailsByUserId, getCompletedTasksByUserId, getInProgressTasksByUserId, getPendingTasksByUserId, getTaskById, updateSubtasksStatus, updateTaskById, updateTaskStatus } from "../services/taskService.js";
 import { addTaskSchema } from "../validators/taskValidators.js";
 
 // get task page
@@ -6,7 +6,7 @@ export const getTaskPage = (req, res) => {
     try {
         res.render('pages/task', {
             title: 'Task Page',
-            location: '/task'
+            location: '/taskpage'
         });
     } catch (error) {
         console.error('Error rendering task page:', error);
@@ -27,12 +27,13 @@ export const getCalenderPage = (req, res) => {
     }
 }
 
+
 // get task details page
 export const getTaskDetailsPage = (req, res) => {
     try {
         res.render('pages/task-details', {
             title: 'Task Details Page',
-            location: '/task-details'
+            location: '/task'
         });
     } catch (error) {
         console.error('Error rendering task details page:', error);
@@ -74,23 +75,32 @@ export const addTask = async (req, res) => {
 // all tasks api
 export const getAllTasks = async (req, res) => {
     try {
-        const { page = 1, status, sort = 'createdAt', order = 'desc' } = req.query;
+        const { page = 1, limit = 10, status, sort = 'createdAt', order = 'desc' } = req.query;
 
         const { tasks, totalCount } = await getAllTasksDetailsByUserId({
             userId: req.user.id,
             status,
             sort,
             order,
-            limit: 10,
+            limit: Number(limit),
             offset: (Number(page) - 1) * 10,
         });
 
-        const totalPages = Math.ceil(totalCount / 10);
+        const totalTasks = await getAllTasksByUserId(req.user.id);
+        const completedTasks = await getCompletedTasksByUserId(req.user.id);
+        const pendingTasks = await getPendingTasksByUserId(req.user.id);
+        const inProgressTasks = await getInProgressTasksByUserId(req.user.id);
+
+        const totalPages = Math.ceil(totalCount / limit);
         res.status(200).json({
             success: true,
             tasks,
             totalPages,
-            currentPage: Number(page),
+            totalCount,
+            completedTasks: completedTasks.length,
+            pendingTasks: pendingTasks.length,
+            inProgressTasks: inProgressTasks.length,
+            totalTasks: totalTasks.length
         });
     } catch (error) {
         console.error('Error fetching tasks:', error);
