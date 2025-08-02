@@ -7,70 +7,72 @@
     <%- include('../partials/head') %>
 </head>
 
-<body class="font-medium flex justify-center items-center h-screen">
-    <%- include('../partials/nav') %>
-        <div class="max-w-lg w-full p-5 bg-white mt-16 rounded-xl shadow-xl overflow-hidden">
-            <!-- Header -->
-            <div class="text-zinc-950">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-2xl font-bold">Verify Your Email</h1>
-                        <p class="mt-1 bg-green-100 text-green-700 p-2 rounded-lg">You are logged in</p>
-                    </div>
-                </div>
-            </div>
+<body class="font-medium font-monts flex justify-center items-center h-screen">
 
-            <!-- Content -->
-            <div class="mt-3">
-                <div class="mb-6">
-                    <div class="flex items-center text-gray mb-2">
-                        <i class="fas fa-envelope mr-2 text-indigo-600"></i>
-                        <span class="font-medium">Email: </span>
-                        <span class="ml-2">
-                            <%= user.email %>
-                        </span>
-                    </div>
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-exclamation-circle text-yellow-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-yellow-700">
-                                    Your email has not been verified yet. Please verify your email by entering the
-                                    8-digit code or request a new verification link.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="max-w-lg w-full p-5 bg-white mt-16 rounded-xl shadow-xl overflow-hidden">
+        <!-- Header -->
+        <div class="text-zinc-950">
+            <div class="flex items-center justify-between">
+                <div>
+                    <a href="/" class="text-sm my-3 font-medium text-gray hover:text-orange-600 hover:underline">Back
+                        Home</a>
+                    <h1 class="text-2xl font-bold">Verify Your Email</h1>
 
-                <form action="/auth/resend-verification-link" method="post">
-
-                    <div class="flex justify-end mb-6">
-                        <button type="submit"
-                            class="resend-link bg-indigo-500 hover:bg-indigo-600 text-white py-3 px-8 rounded-lg font-medium text-sm">
-                            <i class="fas fa-redo mr-1"></i> Resend Verification Link
-                        </button>
-                    </div>
-                </form>
-
-
-                <div class="mb-8">
-                    <form action="/auth/verify-email-token" method="get">
-                        <h3 class="text-lg font-medium text-zinc-800 mb-4">Enter 8-Digit Verification Code</h3>
-                        <input type="text" maxlength="8" name="token" required pattern="\d{8}"
-                            class="px-3 w-full py-3 border outline-0 border-zinc-200 rounded-lg focus:border-indigo-500"
-                            placeholder="Enter 8-Digit Code">
-                        <input type="hidden" name="email" value="<%= user.email %>">
-                        <button type="submit"
-                            class="verify-btn bg-indigo-500 mt-4 hover:bg-indigo-600 text-white font-medium py-3 px-8 rounded-lg">
-                            Verify Code
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
+
+        <!-- Content -->
+        <div class="mt-3">
+            <div class="mb-6">
+                <div class="flex items-center text-gray mb-2">
+                    <i class="fas fa-envelope mr-2 text-orange-600"></i>
+                    <span class="font-medium">Email: </span>
+                    <span class="ml-2">
+                        <%= user.email %>
+                    </span>
+                </div>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg mt-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                Your email has not been verified yet. Please verify your email by entering the
+                                8-digit code or request a new verification link.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form action="/auth/resend-verification-link" method="post">
+
+                <div class="flex justify-end mb-6">
+                    <button type="submit"
+                        class="resend-link bg-orange-500 hover:bg-orange-600 text-white py-3 px-8 rounded-lg font-medium text-sm">
+                        <i class="fas fa-redo mr-1"></i> Resend Verification Link
+                    </button>
+                </div>
+            </form>
+
+
+            <div class="mb-8">
+                <form action="/auth/verify-email-token" method="get">
+                    <h3 class="text-lg font-medium text-zinc-800 mb-4">Enter 8-Digit Verification Code</h3>
+                    <input type="text" maxlength="8" name="token" required pattern="\d{8}"
+                        class="px-3 w-full py-3 border outline-0 border-zinc-200 rounded-lg focus:border-orange-500"
+                        placeholder="Enter 8-Digit Code">
+                    <input type="hidden" name="email" value="<%= user.email %>">
+                    <button type="submit"
+                        class="verify-btn bg-orange-500 mt-4 hover:bg-orange-600 text-white font-medium py-3 px-8 rounded-lg">
+                        Verify Code
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
 </body>
 

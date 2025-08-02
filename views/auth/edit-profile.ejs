@@ -2,100 +2,54 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <%- include('../partials/head') %>
 </head>
 
-<body class="bg-zinc-50 min-h-screen items-center justify-center font-medium flex flex-col">
+<body data-theme="light" class="h-full font-monts bg-primary transition-colors duration-200">
     <%- include('../partials/nav') %>
-        <main class="flex flex-col rounded-lg bg-white max-w-xl w-full mx-auto p-8">
+        <%- include('../partials/sidebar') %>
+            <%- include('../partials/loader') %>
 
-            <% if (user) { %>
-                <div class="flex items-center max-w-[300px] bg-green-100 rounded-lg p-3 mb-6">
-                    <i class="ri-checkbox-circle-fill text-green-500 text-xl mr-2"></i>
-                    <span class="text-green-600">You're logged in</span>
-                </div>
-                <% } else { %>
-                    <div class="flex items-center bg-amber-100 rounded-lg p-3 mb-6">
-                        <i class="ri-alert-fill text-amber-500 text-xl mr-2"></i>
-                        <span class="text-amber-600">You're not logged in</span>
-                        <a href="/auth/login" class="ml-auto text-sm text-indigo-600 hover:underline">Sign in</a>
+                <main id="main-content" class="pt-24 mb-19
+                         text-dark px-4 transition-all max-w-4xl text-dark duration-300 md:ml-[270px]">
+
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold mb-2">Edit Your Profile</h1>
                     </div>
-                    <% } %>
-                        <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-zinc-800 mb-2">Edit Your Profile</h1>
+
+                    <!-- Shorten Form -->
+                    <form action="/auth/edit-profile" method="POST" class="space-y-5 mb-8">
+                        <div class="space-y-3">
+                            <div>
+                                <label for="name" class="mb-1.5 text-base font-medium text-gray flex items-center">
+                                    <i class="ri-user-3-line mr-2"></i> Your Name
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="name" name="name" value="<%= user.name %>"
+                                        class="w-full pl-10 pr-4 py-3 outline-0 border border-zinc-500/30 rounded-lg focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all">
+                                    <i class="ri-user-line absolute left-3 top-3.5 text-zinc-400"></i>
+                                </div>
+                            </div>
+
                         </div>
 
-                        <!-- Shorten Form -->
-                        <form action="/auth/edit-profile" method="POST" class="space-y-5 mb-8"
-                            enctype="multipart/form-data">
-                            <div class="space-y-3">
-                                <div>
-                                    <label for="name" class=" text-[16px] font-medium text-gray flex items-center">
-                                        <i class="ri-user-3-line mr-2"></i> Your Name
-                                    </label>
-                                    <div class="relative">
-                                        <input type="text" id="name" name="name" value="<%= user.name %>"
-                                            class="w-full pl-10 pr-4 py-3 outline-0 border border-zinc-200 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-                                        <i class="ri-user-line absolute left-3 top-3.5 text-zinc-400"></i>
-                                    </div>
-                                </div>
+                        <div class="error">
+                            <%- include('../partials/error') %>
+                        </div>
 
-                                <!-- avatarUrl -->
-                                <div>
-                                    <label for="avatarUrl" class=" text-[16px] font-medium text-gray flex items-center">
-                                        <i class="ri-user-line mr-2"></i> Profile Picture
-                                    </label>
-                                    <div class="relative">
-                                        <input type="file" id="avatarUrl" name="avatarUrl"
-                                            class="w-full pl-10 pr-4 py-3 outline-0 border cursor-pointer border-zinc-200 rounded-lg focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-                                        <i class="ri-user-line absolute left-3 top-3.5 text-zinc-400"></i>
-                                    </div>
-                                    <!-- image preview -->
-                                    <% if (user.avatarUrl) { %>
-                                        <div class="mt-3">
-                                            <img src="<%= user.avatarUrl %>" alt="avatar" id="previewAvatar"
-                                                class="w-16 h-16 rounded-full">
-                                        </div>
-                                        <% } else { %>
-                                            <div class="mt-3">
-                                                <img src="" alt="avatar" id="previewAvatar"
-                                                    class="w-16 h-16 rounded-full">
-                                            </div>
-                                            <% } %>
+                        <button type="submit"
+                            class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all">
+                            Update Profile
+                        </button>
+                    </form>
 
-                                </div>
-                            </div>
-
-                            <div class="error">
-                                <%- include('../partials/error') %>
-                            </div>
-
-                            <button type="submit"
-                                class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all">
-                                Update Profile
-                            </button>
-                        </form>
-
-        </main>
+                </main>
 
 
-        <script>
-            const avatarUrlInput = document.getElementById('avatarUrl');
-            const previewAvatar = document.getElementById('previewAvatar');
-
-            avatarUrlInput.addEventListener('change', function () {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewAvatar.src = e.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    previewAvatar.src = '';
-                }
-            });
-        </script>
+                <%- include('../partials/utiljs') %>
 
 </body>
 

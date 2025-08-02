@@ -117,23 +117,6 @@
                     </div>
                 </div>
 
-                <!-- Pie Chart Modal -->
-                <div id="taskPieChartContainer"
-                    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
-                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold">Your Today's Task Overview</h2>
-                            <button onclick="closePieChart()"
-                                class="p-2 text-white cursor-pointer rounded-full hover:text-orange-600 transition-colors">
-                                <i class="ri-close-line text-2xl"></i>
-                            </button>
-                        </div>
-                        <div class="relative h-80">
-                            <canvas id="taskPieChart"></canvas>
-                        </div>
-                        <div id="pieChartLegend" class="flex justify-center gap-4 mt-8"></div>
-                    </div>
-                </div>
 
                 <div id="dailyChartContainer"
                     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center transition-all duration-300 opacity-0 hidden">
@@ -151,44 +134,11 @@
                         </div>
                     </div>
                 </div>
+                <%- include('../partials/footer') %>
 
-                <!-- Bar Chart Modal -->
-                <div id="taskChartContainer"
-                    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
-                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-2xl mx-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold">Your Today's Task Statistics</h2>
-                            <button onclick="closeChart()"
-                                class="p-2 text-[#fff] cursor-pointer rounded-full hover:text-orange-600 transition-colors">
-                                <i class="ri-close-line text-2xl"></i>
-                            </button>
-                        </div>
-                        <div class="relative h-80">
-                            <canvas id="taskChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Weekly Line Chart Modal -->
-                <div id="lineChartContainer"
-                    class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none">
-                    <div class="bg-primary text-dark rounded-xl shadow-xl p-6 w-full max-w-4xl mx-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-xl font-semibold text-dark">Weekly Progress</h2>
-                            <button onclick="closeLineChart()"
-                                class="p-2 cursor-pointer rounded-full hover:text-orange-600 transition-colors">
-                                <i class="ri-close-line text-2xl cursor-pointer"></i>
-                            </button>
-                        </div>
-                        <div class="relative h-96">
-                            <canvas id="lineChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                <script type="module" src="/javascripts/pages/calender.js"></script>
-                <%- include('../partials/utiljs') %>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script type="module" src="/javascripts/pages/calender.js"></script>
+                    <%- include('../partials/utiljs') %>
 </body>
 
 </html>
