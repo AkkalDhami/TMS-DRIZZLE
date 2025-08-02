@@ -11,7 +11,7 @@
 }
 @layer components {
   .bg-primary {
-    @apply bg-white dark:bg-zinc-900;
+    @apply bg-white dark:bg-[#020617];
   }
   .bg-light {
     @apply bg-zinc-50 dark:bg-zinc-800;
@@ -24,7 +24,7 @@
     @apply text-zinc-900 dark:text-zinc-50;
   }
   .bg-card {
-    @apply bg-zinc-50 dark:bg-zinc-800;
+    @apply bg-zinc-50 dark:bg-[#091121];
   }
   .hover-card {
     @apply hover:bg-zinc-100 dark:hover:bg-zinc-700 duration-300;
@@ -33,7 +33,7 @@
     @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-500  to-orange-600;
   }
   .active {
-    @apply bg-orange-500 text-white;
+    @apply bg-orange-700 text-white;
   }
 }
 .loader {
