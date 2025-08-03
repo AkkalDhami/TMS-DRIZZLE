@@ -28,16 +28,16 @@ export const addTaskSchema = z.object({
     dueDate: z.coerce.date()
 })
     .refine(data => {
-        const today = stripTime(new Date());
-        const inputDate = stripTime(data.startDate);
+        const today = new Date();
+        const inputDate = data.startDate;
         return inputDate >= today;
     }, {
         message: "Start date cannot be in the past",
         path: ["startDate"]
     })
     .refine(data => {
-        const start = stripTime(data.startDate);
-        const due = stripTime(data.dueDate);
+        const start = data.startDate;
+        const due = data.dueDate;
         return due > start;
     }, {
         message: "Due date must be after the start date",
