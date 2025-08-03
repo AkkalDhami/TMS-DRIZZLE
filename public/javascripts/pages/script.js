@@ -12,7 +12,7 @@ import { togglesubtaskStatus } from "../utils/toggle-subtask.js";
 let page = 1;
 const limit = 10;
 const paginationDiv = document.getElementById('pagination');
-
+let alarmInterval = null;
 
 const toDoForm = document.getElementById("toDoForm");
 let modalTitle = toDoForm.querySelector("#modalTitle");
@@ -65,7 +65,7 @@ toDoForm.addEventListener("submit", async (e) => {
         }
 
         showToast(
-            data.message || (method === "PATCH" ? "Task updated" : "Task added"),
+            data?.message || (method === "PATCH" ? "Task updated" : "Task added"),
             "success"
         );
         toDoForm.reset();
@@ -79,7 +79,6 @@ toDoForm.addEventListener("submit", async (e) => {
     } finally {
         addTaskBtn.disabled = false;
         addTaskBtn.innerHTML = `Save Task`;
-        toDoForm.reset();
     }
 });
 
@@ -93,7 +92,12 @@ let currentSort = "";
 let currentView = "listView";
 let currentOrder = "asc";
 
-loadTasks();
+document.addEventListener("DOMContentLoaded", () => {
+    loadTasks()
+    checkDueDates();
+    setInterval(checkDueDates, 30000);
+});
+
 function getBorderColor(status) {
     switch (status) {
         case "pending":
@@ -181,7 +185,7 @@ document.querySelectorAll("#taskDisplayBtns button").forEach((btn) => {
     btn.addEventListener("click", () => {
         currentView = btn.dataset.view;
         if (currentView === 'listView') {
-            
+
             document.getElementById('taskLists').classList.remove('hidden');
             document.querySelector('.table-view').classList.add('hidden');
         } else {
@@ -277,14 +281,12 @@ async function loadTasks(p = 1) {
     try {
         const res = await fetch(`/task/api/all?${params.toString()}`);
         const data = await res.json();
-
         if (data.success) {
             renderTasks(data.tasks);
             updateStats(
                 data.completedTasks,
                 data.pendingTasks,
-                data.inProgressTasks,
-                data.totalCount
+                data.inProgressTasks
             );
             renderPagination(data.totalPages, data.totalTasks);
         } else {
@@ -373,7 +375,7 @@ function renderTasks(tasks) {
                                     </div>
                                     <p class="line-clamp-1 text-sm sm:text-base text-zinc my-1">${description}</p>
                                     <div class="flex flex-wrap text-xs sm:text-sm items-center justify-between">
-                                        <div class="flex flex-wrap text-xs sm:text-sm items-center gap-1 sm:gap-4">
+                                        <div class="flex text-gray flex-wrap text-xs sm:text-sm items-center gap-1 sm:gap-4">
                                             <span
                                                 class="flex items-center text-zinc gap-1 py-1 rounded-full font-medium whitespace-nowrap">
                                                  <i class="ri-calendar-line mr-[2px]"></i> Due: ${formattedDate(dueDate)}
@@ -567,13 +569,13 @@ document.addEventListener("change", async (e) => {
         if (!data.success) {
             spin.classList.remove("flex");
             spin.classList.add("hidden");
-            return showToast(data.message, "error");
+            return showToast(data?.message, "error");
         }
 
         spin.classList.remove("flex");
         spin.classList.add("hidden");
         loadTasks();
-        showToast(data.message, "success");
+        showToast(data?.message, "success");
     }
 
     //* event listener for toggle subtask status
@@ -586,10 +588,10 @@ document.addEventListener("change", async (e) => {
             const data = await togglesubtaskStatus(subtaskid);
 
             if (!data.success) {
-                return showToast(data.message, "error");
+                return showToast(data?.message, "error");
             }
             loadTasks();
-            showToast(data.message, "success");
+            showToast(data?.message, "success");
         } catch (error) {
             console.error(error);
             showToast(error.message, "error");
@@ -616,12 +618,12 @@ document.addEventListener("click", async (e) => {
                     spin.classList.remove("flex");
                     spin.classList.add("hidden");
                     closeDeleteTaskModal();
-                    return showToast(data.message, "error");
+                    return showToast(data?.message, "error");
                 }
                 spin.classList.remove("flex");
                 spin.classList.add("hidden");
                 closeDeleteTaskModal();
-                showToast(data.message, "success");
+                showToast(data?.message, "success");
                 loadTasks();
             });
     }
@@ -633,7 +635,7 @@ document.addEventListener("click", async (e) => {
         const taskId = e.target.dataset.taskid;
         openTaskModal();
         updateFormElements(taskId);
-        console.log(taskId);
+
     }
 });
 
@@ -644,7 +646,7 @@ function updateFormElements(taskId) {
         .then((res) => res.json())
         .then(({ success, task }) => {
             if (!success) {
-                return showToast(data.message, "error");
+                return showToast(data?.message, "error");
             }
 
             toDoForm.elements["title"].value = task.title;
@@ -677,7 +679,7 @@ document.addEventListener("click", async (e) => {
             const data = await res.json();
 
             if (!res.ok || !data.success) {
-                return showToast(data.message || "Failed to load task", "error");
+                return showToast(data?.message || "Failed to load task", "error");
             }
 
             document.getElementById("parentTaskText").innerHTML =
@@ -698,8 +700,8 @@ document.addEventListener("click", async (e) => {
 
         const data = await addSubTask(taskId);
 
-        if (!data.success) return showToast(data.message, "error");
-        showToast(data.message || "Subtask added", "success");
+        if (!data?.success) return showToast(data?.message, "error");
+        showToast(data?.message || "Subtask added", "success");
 
         document.getElementById("subtaskForm").reset();
         closeSubTaskModal();
@@ -726,10 +728,10 @@ document.addEventListener("click", async (e) => {
 
             let data = await res.json();
             if (!res.ok) {
-                return showToast(data.message || "Failed to delete subtask", "error");
+                return showToast(data?.message || "Failed to delete subtask", "error");
             }
 
-            showToast(data.message || "Subtask deleted", "success");
+            showToast(data?.message || "Subtask deleted", "success");
         } catch (error) {
             console.error("Error deleting subtask:", error);
             showToast("Network error occurred", "error");
@@ -752,7 +754,6 @@ document.addEventListener("click", async (e) => {
 async function addSubTask(taskId) {
     const subTaskForm = document.getElementById("subtaskForm");
     const formData = new FormData(subTaskForm);
-    if (!formData.get("text")) return showToast("Subtask title is required", "error");
     const payload = Object.fromEntries(formData);
 
     try {
@@ -767,14 +768,7 @@ async function addSubTask(taskId) {
             },
             body: JSON.stringify(payload),
         });
-
         const data = await res.json();
-        if (!res.ok) {
-            return {
-                success: false,
-                message: data.message || "Failed to add subtask",
-            };
-        }
 
         return data;
     } catch (error) {
@@ -794,7 +788,7 @@ async function updateSubtaskFormElements(subtaskId) {
         const subtaskData = await res.json();
 
         if (!res.ok || !subtaskData.success) {
-            return showToast(subtaskData.message || "Failed to load subtask", "error");
+            return showToast(subtaskdata?.message || "Failed to load subtask", "error");
         }
 
         document.getElementById('editSubtaskInput').value = subtaskData.subtask.text;
@@ -804,8 +798,8 @@ async function updateSubtaskFormElements(subtaskId) {
             .addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const data = await updateSubTask(subtaskId);
-                if (!data.success) return showToast(data.message, "error");
-                showToast(data.message || "Subtask updated successfully", "success");
+                if (!data.success) return showToast(data?.message, "error");
+                showToast(data?.message || "Subtask updated successfully", "success");
                 document.getElementById("updateSubtaskForm").reset();
                 closeUpdateSubTaskModal();
                 loadTasks();
@@ -840,7 +834,7 @@ async function updateSubTask(subtaskId) {
         if (!res.ok) {
             return {
                 success: false,
-                message: data.message || "Failed to update subtask",
+                message: data?.message || "Failed to update subtask",
             };
         }
 
@@ -856,7 +850,6 @@ async function updateSubTask(subtaskId) {
 }
 
 //? pagination
-
 function renderPagination(totalPages, totalTasks) {
     paginationDiv.innerHTML = '';
     if (totalPages <= 1) return;
@@ -925,11 +918,59 @@ function renderPagination(totalPages, totalTasks) {
 
 
 //? update stats
-
-function updateStats(completedTasks, pendingTasks, inProgressTasks, totalTasks) {
-
+function updateStats(completedTasks, pendingTasks, inProgressTasks) {
+    const totalTasks = completedTasks + pendingTasks + inProgressTasks;
     document.getElementById('totalTasksCount').textContent = totalTasks;
     document.getElementById('completedTasksCount').textContent = completedTasks;
     document.getElementById('pendingTasksCount').textContent = pendingTasks;
     document.getElementById('inProgressTasksCount').textContent = inProgressTasks;
+}
+
+
+async function checkDueDates() {
+    try {
+        const now = new Date();
+        let tasks = []
+        const res = await fetch('/task/all')
+        const data = await res.json();
+        console.log(data);
+        if (!data.success) {
+            return showToast(data?.message, 'error')
+        }
+        data.tasks.forEach((task) => {
+            const dueDate = new Date(task.dueDate);
+            const alarmDateTime = new Date(dueDate.getTime() - task.remainder * 1000);
+
+            if (
+                task.status === "pending" &&
+                alarmDateTime <= now
+
+            ) {
+                showToast( `${task.title} is due now`, 'alarm')
+                if (task.repeat !== "none") {
+                    // resetRepeatingTask(task);
+                    console.log('asdfasdf');
+                }
+            }
+        });
+
+        loadTasks();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function playAlarm() {
+    const alarm = document.getElementById("alarmSound");
+    alarm.play().catch((error) => console.log("Error playing alarm:", error));
+}
+
+function stopAlarm() {
+    const alarm = document.getElementById("alarmSound");
+    alarm.pause();
+    alarm.currentTime = 0;
+    if (alarmInterval) {
+        clearInterval(alarmInterval);
+        alarmInterval = null;
+    }
 }
