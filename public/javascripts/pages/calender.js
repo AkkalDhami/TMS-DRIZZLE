@@ -1,6 +1,6 @@
 
 let tasks = [];
-fetch(`/task/api/all`)
+fetch(`/task/all`)
     .then((res) => res.json())
     .then((data) => {
         if (data.success) {
@@ -61,7 +61,7 @@ function createDateElement(date) {
 
     dateTasks.slice(0, 2).forEach((task) => {
         const indicator = document.createElement("div");
-        indicator.className = `mb-1 w-full line-clamp-1 border-l-3 sm:text-sm rounded px-2 py-[4px] ${task.status === "completed" ? "bg-green-500/10 text-green-500 border-green-500" : task.status === 'in-progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500'}`;
+        indicator.className = `mb-1 w-full line-clamp-1 border-l-3 sm:text-sm rounded px-2 py-[4px] ${task.status === "completed" ? "bg-green-500/10 text-green-500 border-green-500" : task.status === 'in progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500' : 'bg-yellow-500/10 text-yellow-500 border-yellow-500'}`;
 
         indicator.innerHTML = `
             <h3 class="text-dark text-sm line-clamp-1 mb-1 text-wrap">${task.title}</h3>
@@ -131,7 +131,7 @@ function getTaskStatus(status) {
             return 'Completed';
         case "pending":
             return 'Pending';
-        case "in-progress":
+        case "in progress":
             return 'In Progress';
         default:
             return 'Pending';
@@ -153,7 +153,7 @@ function handleDateClick(date, tasks) {
         (task) => task.status === "pending"
     ).length;
     const inProgressTasks = tasks.filter(
-        (task) => task.status === "in-progress"
+        (task) => task.status === "in progress"
     ).length;
 
     document.getElementById("taskCount").innerHTML = `
@@ -186,7 +186,7 @@ function handleDateClick(date, tasks) {
                         case "pending":
                             textClass = "text-yellow-500";
                             break;
-                        case "in-progress":
+                        case "in progress":
                             textClass = "text-blue-500";
                             break;
                         default:
@@ -328,7 +328,7 @@ function generateDailyChartByType(ctx, targetDate, chartType = 'bar') {
     const taskCounts = {
         completed: dayTasks.filter(task => task.status === 'completed').length,
         pending: dayTasks.filter(task => task.status === 'pending').length,
-        inProgress: dayTasks.filter(task => task.status === 'in-progress').length
+        inProgress: dayTasks.filter(task => task.status === 'in progress').length
     };
 
     const total = dayTasks.length;

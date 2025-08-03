@@ -10,7 +10,7 @@ let timeDistributionChartInstance = null;
 let productivityChartInstance = null;
 document.getElementById("dailyDistributionDate").valueAsDate = new Date();
 
-fetch(`/task/api/all`)
+fetch(`/task/all`)
     .then((res) => res.json())
     .then((data) => {
         console.log(data);
