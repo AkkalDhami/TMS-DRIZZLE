@@ -67,7 +67,8 @@
 .toast.error::before {
   background: #e24d4c;
 }
-.toast.warn::before {
+.toast.warn::before,
+.toast.alarm::before {
   background: #e9bd0c;
 }
 
@@ -80,9 +81,11 @@
 .toast.error .column i {
   color: #e24d4c;
 }
-.toast.warn .column i {
+.toast.warn .column i,
+.toast.alarm .column i {
   color: #e9bd0c;
 }
+
 .toast.info .column i {
   color: var(--text-gray);
 }
@@ -90,7 +93,6 @@
   font-size: 1.07rem;
   margin-left: 12px;
 }
-
 
 @media screen and (max-width: 830px) {
   #toastContainer {
