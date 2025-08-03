@@ -9,6 +9,8 @@
 .font-monts {
   font-family: "Montserrat", sans-serif;
 }
+
+
 @layer components {
   .bg-primary {
     @apply bg-white dark:bg-[#020617];
