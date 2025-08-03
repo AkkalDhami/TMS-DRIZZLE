@@ -85,14 +85,14 @@
                                     <i class="ri-add-line mr-2"></i> Add New Task
                                 </button>
 
-                                <div id="taskDisplayBtns" class="flex flex-wrap gap-2 sm:gap-4">
+                                <div id="taskDisplayBtns" class="flex flex-wrap gap-2 sm:gap-3">
                                     <button data-view="listView" id="listViewBtn"
-                                        class="cursor-pointer active px-2 text-sm sm:text-[16px] sm:px-4 py-1.5 sm:py-2 rounded-lg border border-zinc-500/30 hover:bg-orange-600 hover:text-white transition-colors">
+                                        class="cursor-pointer active px-2 text-sm py-1.5 rounded-lg border border-zinc-500/30 hover:bg-orange-600 hover:text-white transition-colors">
                                         <i class="ri-list-check-2"></i>
                                     </button>
 
                                     <button data-view="tableView" id="tableViewBtn"
-                                        class="cursor-pointer px-2 text-sm sm:text-[18px] sm:px-4 py-1.5 sm:py-2 rounded-lg border border-zinc-500/30 hover:bg-orange-600 hover:text-white transition-colors">
+                                        class="cursor-pointer px-2 text-sm  py-1.5 rounded-lg border border-zinc-500/30 hover:bg-orange-600 hover:text-white transition-colors">
                                         <i class="ri-table-line"></i>
                                     </button>
                                 </div>
@@ -174,8 +174,8 @@
                                                 <th class="text-left py-3 px-4 text-gray tracking-wider font-medium">
                                                     Repeated
                                                 </th>
-                                                <th class="text-left py-3 px-4 text-gray tracking-wider font-medium">
-                                                    Action
+                                                <th class="text-center py-3 px-4 text-gray tracking-wider font-medium">
+                                                    Actions
                                                 </th>
                                             </tr>
                                         </thead>
@@ -199,140 +199,6 @@
 
 
                 <section>
-                    <!-- addd notes modal -->
-                    <div id="add-note-modal"
-                        class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all">
-                        <div
-                            class="bg-primary rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0">
-                            <!-- Modal Header -->
-                            <form id="addNoteForm" class="relative">
-                                <div class="flex items-center justify-between p-5 border-b border-zinc-500/30">
-                                    <div class="flex items-center space-x-3">
-                                        <h3 id="note-modal-title" class="text-xl font-bold">Create New Note</h3>
-                                    </div>
-                                    <button onclick="hideNotesModal()" class="p-2 rounded-lg transition-colors">
-                                        <svg class="w-6 h-6 text-zinc hover:text- orange-500" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-
-                                <!-- Modal Body -->
-                                <div class="p-5  space-y-6">
-                                    <div class="relative">
-                                        <input type="text" id="note-title" required placeholder=""
-                                            class="w-full px-4 py-3 pr-7 border border-zinc-500/40 rounded-lg focus:border-orange-500 outline-0 peer placeholder-transparent" />
-                                        <div onclick="speak('note-title')"
-                                            class="absolute right-3 text-xl top-[9px] cursor-pointer hover:text- orange-500 text-zinc">
-                                            <i class="ri-mic-ai-line"></i>
-                                        </div>
-                                        <label for="note-title"
-                                            class="absolute left-4 -top-2.5 bg-primary px-2 text-sm text-zinc transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm duration-200 peer-focus:text- orange-600">
-                                            Note Title
-                                        </label>
-                                    </div>
-
-
-                                    <div class="relative">
-                                        <textarea id="note-content" rows="4" required placeholder=""
-                                            class="w-full px-4 py-3 border resize-none scrollbar-hide border-zinc-500/40 rounded-lg focus:border-orange-500 outline-0 pr-7 peer placeholder-transparent"></textarea>
-                                        <div onclick="speak('note-content')"
-                                            class="absolute right-3 text-xl top-[9px] cursor-pointer hover:text- orange-500 text-zinc">
-                                            <i class="ri-mic-ai-line"></i>
-                                        </div>
-                                        <label for="note-content"
-                                            class="absolute left-4 -top-2.5 bg-primary px-2 text-sm text-zinc transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text- orange-600">
-                                            Note Content
-                                        </label>
-                                    </div>
-
-                                </div>
-
-                                <div class="p-5 flex justify-end space-x-3">
-                                    <button onclick="hideNotesModal()"
-                                        class="px-3 sm:px-6 py-2.5 text-zinc border border-zinc-500/20 hover:border-orange-500 rounded-lg transition-colors font-medium">
-                                        Cancel
-                                    </button>
-                                    <button type="submit" id="addNoteBtn"
-                                        class="px-3 sm:px-6 py-2.5 bg-orange-500 hover:bg-orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
-                                        <span>Add Note</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- edit note modal -->
-                    <div id="editNoteModal"
-                        class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all">
-                        <div class="bg-primary rounded-2xl shadow-2xl w-full max-w-lg">
-
-                            <div class="flex items-center justify-between p-5 border-b border-zinc-500/30">
-                                <div class="flex items-center space-x-3">
-                                    <h3 id="edit-note-modal-title" class="text-xl font-bold">Edit Note</h3>
-                                </div>
-                                <button type="button" onclick="hideEditNoteModal()"
-                                    class="p-2 rounded-lg transition-colors">
-                                    <svg class="w-6 h-6 text-zinc hover:text- orange-500" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <!-- Modal Body -->
-                            <div class="p-5 space-y-6">
-                                <div class="relative">
-                                    <input type="text" id="editNoteTitle" required placeholder=""
-                                        class="w-full px-4 py-3 border border-zinc-500/40 rounded-lg focus:border-orange-500 outline-0 peer placeholder-transparent" />
-                                    <label for="editNoteTitle"
-                                        class="absolute left-4 -top-2.5 bg-primary px-2 text-sm text-zinc transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm duration-200 peer-focus:text- orange-600">
-                                        Note Title
-                                    </label>
-                                </div>
-
-                                <div class="relative">
-                                    <textarea id="editNoteContent" rows="5" required placeholder=""
-                                        class="w-full px-4 py-3 border resize-none scrollbar-hide border-zinc-500/40 rounded-lg focus:border-orange-500 outline-0 peer placeholder-transparent"></textarea>
-                                    <label for="editNoteContent"
-                                        class="absolute left-4 -top-2.5 bg-primary px-2 text-sm text-zinc transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-zinc-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm duration-200 peer-focus:text- orange-600">
-                                        Note Content
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="p-5 flex justify-end space-x-3">
-                                <button type="button" onclick="hideEditNoteModal()"
-                                    class="px-3 sm:px-6 py-2.5 text-zinc border border-zinc-500/20 hover:border-orange-500 rounded-lg transition-colors font-medium">
-                                    Cancel
-                                </button>
-                                <button type="submit" id="saveEditedNoteBtn"
-                                    class="px-3 sm:px-6 py-2.5 bg-orange-500 hover:bg-orange-600 duration-200 text-white rounded-lg hover:shadow-md transition-all font-medium flex items-center space-x-2">
-                                    <span>Save Changes</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- view all subtask details modal -->
-                    <div id="subtaskDetailsModal"
-                        class="hidden fixed items-center justify-center inset-0 z-50 backdrop-blur-md bg-black/50">
-                        <div class="bg-primary p-6 rounded-xl shadow-2xl w-[480px]">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold">Subtask Details</h2>
-                                <button onclick="closeSubtaskDetailsModal()"
-                                    class="p-2 cursor-pointer rounded-full hover:text- orange-600 transition-colors">
-                                    <i class="ri-close-line text-2xl cursor-pointer"></i>
-                                </button>
-                            </div>
-                            <div id="subtaskDetails" class="subtasks-list maxh-[400px] overflow-y-auto space-y-2 mt-1">
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Subtask Modal -->
                     <div id="subtaskModal"
                         class="hidden backdrop-blur-md fixed bg-black/60 inset-0 z-50 items-center justify-center">
@@ -394,199 +260,6 @@
                         </div>
                     </div>
 
-                    <!-- Task Details Modal -->
-                    <div id="taskDetailsModal"
-                        class="hidden fixed bg-black/60 backdrop-blur-md inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
-                        <div
-                            class="bg-card max-h-[600px] overflow-y-auto mx-auto p-5 sm:p-8 rounded-2xl w-full max-w-5xl shadow-lg backdrop-blur-[20px] transition-all duration-300 transform">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 id="detailTaskTitle" class="text-2xl sm:text-3xl font-bold">Task Details</h3>
-                                <button onclick="closeTaskDetailsModal()"
-                                    class="text-zinc hover:text- orange-500 transition-colors">
-                                    <i class="fas fa-times text-xl"></i>
-                                </button>
-                            </div>
-
-                            <div
-                                class="p-5 rounded-lg border-l-4 border-orange-500 shadow-sm mb-5 hover:shadow-md transition-all duration-300">
-                                <div id="detailTaskText"
-                                    class="font-medium text-sm sm:text-[18px] flex justify-between break-words">
-
-                                </div>
-                                <div id="dueStatus" class="text-xs text-zinc sm:text-sm font-medium flex justify-end">
-                                    ⏳ Due in 4 hours and 8 minutes
-                                </div>
-                            </div>
-
-                            <!-- task tags -->
-                            <div id="detailTaskTags" class="flex flex-wrap gap-2 mb-5">
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                <div
-                                    class="p-3 bg-pink-400/10 rounded-xl border-l-4 duration-300 border-pink-500 hover:bg-pink-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-pink-500 mb-2 font-semibold"> <i
-                                                class="ri-fire-line"></i>&nbsp;
-                                            STATUS</p>
-                                        <p id="detailTaskStatus" class="text-xs sm:text-sm font-medium">Pending</p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-cyan-400/10 rounded-xl border-l-4 duration-300 border-cyan-500 hover:bg-cyan-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-cyan-500 mb-2 font-semibold"> <i
-                                                class="ri-tree-node"></i>&nbsp;
-                                            CATEGORY</p>
-                                        <p id="detailTaskCategory" class="text-xs sm:text-sm font-medium">Work</p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-blue-400/10 rounded-xl border-l-4 duration-300 border-blue-500 hover:bg-blue-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-blue-500 mb-2 font-semibold"> <i
-                                                class="ri-flashlight-line"></i>&nbsp; PRIORITY</p>
-                                        <p id="detailTaskPriority" class="text-xs sm:text-sm font-medium">High</p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-orange-400/10 rounded-xl border-l-4 duration-300 border-orange-500 hover:bg-orange-700/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-orange-500 mb-2 font-semibold"> <i
-                                                class="ri-repeat-line"></i>&nbsp;
-                                            REPEATED</p>
-                                        <p id="detailTaskRepeat" class="text-xs sm:text-sm  font-medium">None</p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-fuchsia-400/10 rounded-xl border-l-4 duration-300 border-fuchsia-500 hover:bg-fuchsia-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-fuchsia-500 mb-2  font-semibold"> <i
-                                                class="ri-calendar-line"></i>&nbsp; STARTED AT</p>
-                                        <p id="detailTaskStarted" class="text-xs sm:text-sm  font-medium">May 24, 2025,
-                                            08:35 AM
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-green-400/10 rounded-xl border-l-4 duration-300 border-green-500 hover:bg-green-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-green-500 mb-2 font-semibold"> <i
-                                                class="ri-time-line"></i>&nbsp;
-                                            DUE DATE</p>
-                                        <p id="detailTaskDueDate" class="text-xs sm:text-sm  font-medium">May 24, 2025,
-                                            08:35 AM
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-orange-400/10 rounded-xl border-l-4 duration-300 border-orange-500 hover:bg-orange-700/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text- orange-500 mb-2  font-semibold"> <i
-                                                class="ri-calendar-line"></i>&nbsp; CREATED AT</p>
-                                        <p id="detailTaskCreated" class="text-xs sm:text-sm  font-medium">May 24, 2025,
-                                            08:35 AM
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-indigo-400/10 rounded-xl border-l-4 duration-300 border-indigo-500 hover:bg-indigo-500/10">
-                                    <div>
-                                        <p class="text-xs sm:text-[16.5px] text-indigo-500 mb-2  font-semibold"> <i
-                                                class="ri-calendar-line"></i>&nbsp; COMPLETED AT</p>
-                                        <p id="detailTaskCompleted" class="text-xs sm:text-sm  font-medium">May 24,
-                                            2025,
-                                            08:35
-                                            AM</p>
-                                    </div>
-                                </div>
-
-                                <div
-                                    class="p-3 bg-red-400/10 rounded-xl border-l-4 duration-300 border-red-500 hover:bg-red-500/10">
-                                    <div>
-                                        <p class="text-xs uppercase sm:text-[16.5px] text-red-500 mb-2  font-semibold">
-                                            <i class="ri-calendar-line"></i>&nbsp; Total duration
-                                        </p>
-                                        <p id="taskDuration" class="text-xs sm:text-sm  font-medium">9 hours, 12 minutes
-                                        </p>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div id="subtasksSection" class="mt-6 border-t border-[var(--text-zinc)]/10 pt-4 hidden">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span
-                                        class="font-medium text-[16px] sm:text-xl bg-gradient-to-r from- orange-500 to- orange-600 bg-clip-text text-transparent">Subtasks</span>
-                                    <span id="subtasksProgress"
-                                        class="sm:text-sm text-xs text-zinc rounded-full font-medium"></span>
-                                </div>
-                                <div class="h-1.5 bg-zinc-200 rounded-full overflow-hidden mb-4">
-                                    <div id="subtasksProgressBar"
-                                        class="h-full bg-gradient-to-r from- orange-500 to- orange-600 transition-all duration-500">
-                                    </div>
-                                </div>
-                                <div id="subtasksDetailList" class="max-h-[200px] overflow-y-auto rounded-lg py-3 px-1">
-                                </div>
-                            </div>
-
-                            <!-- note details -->
-                            <div id="notesSection" class="mt-6 border-t border-[var(--text-zinc)]/10 pt-4">
-                                <h3 class="font-medium text- orange-500 text-[14px] sm:text-xl mb-3">
-                                    Notes & Documentation
-                                </h3>
-
-                                <div id="notesList" class="grid grid-cols-1 md:grid-cols-2 mt-5 gap-6 mb-2">
-
-                                </div>
-                            </div>
-
-
-                            <div class="flex flex-wrap gap-3 items-center mt-1  pt-4">
-                                <div class="flex items-center space-x-2 text-sm sm:text-[16px] text-zinc">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span id="detailTaskEditedDate">Last edited: 2 days ago</span>
-                                </div>
-                                <div class="flex items-center space-x-2 text-sm sm:text-[16px] text-zinc">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span id="detailTaskCreator">Created by: John Doe</span>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-wrap justify-end gap-3 mt-6">
-
-                                <button id="editTaskBtn" onclick="openEditModal(0); closeTaskDetailsModal()"
-                                    class="px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 shadow-md hover:shadow-lg">
-                                    <span>Edit Task</span>
-                                </button>
-                                <button id="manageSubtasksBtn" onclick="breakdownTask(0); closeTaskDetailsModal()"
-                                    class="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors hidden items-center gap-2 shadow-md hover:shadow-lg">
-                                    <span>Add Subtask</span>
-                                </button>
-                                <button onclick="closeTaskDetailsModal()"
-                                    class="px-3 py-2 bg-zinc-500 text-white rounded-lg hover:bg-zinc-600 transition-colors flex items-center gap-2 shadow-md hover:shadow-lg">
-                                    <span>Cancel</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                </section>
-                <%- include('../partials/footer') %>
-
                     <!-- Delete Task Modal -->
                     <div id="deleteTaskModal"
                         class="modal fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
@@ -611,6 +284,9 @@
                             </div>
                         </div>
                     </div>
+
+                </section>
+                <%- include('../partials/footer') %>
 
 
                     <audio id="alarmSound" src="https://www.soundjay.com/buttons/beep-01a.mp3" preload="auto"
