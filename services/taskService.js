@@ -152,8 +152,8 @@ export const updateTaskById = async ({ taskId, userId, title, description, categ
             category,
             priority,
             repeat,
-            startDate,
-            dueDate,
+            startDate: new Date(startDate),
+            dueDate: new Date(dueDate),
             remainder,
             userId
         })
