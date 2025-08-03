@@ -26,7 +26,13 @@ export const addSubtask = async (req, res) => {
             success: false,
             message: 'Invalid task id'
         });
-        await addSubtaskByTaskId({ text: req.body.text, taskId });
+        if (!req.body.text.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Subtask is required'
+            });
+        }
+        await addSubtaskByTaskId({ text: req.body.text.trim(), taskId });
         await updateTasksStatus(taskId);
         res.status(200).json({
             success: true,

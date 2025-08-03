@@ -56,7 +56,7 @@ export const addTask = async (req, res) => {
         }
 
         const taskData = result.data;
-
+        console.log(taskData);
         await addNewTask({ ...taskData, userId: req.user.id });
 
         return res.status(200).json({
@@ -72,8 +72,27 @@ export const addTask = async (req, res) => {
     }
 };
 
-// all tasks api
+// all tasks
 export const getAllTasks = async (req, res) => {
+    try {
+        const tasks = await getAllTasksByUserId(req.user.id);
+
+        res.status(200).json({
+            success: true,
+            tasks
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(200).json({
+            success: true,
+            message: error.message || 'Internal Server Error'
+        })
+    }
+}
+
+// all filtered tasks api
+export const getFilteredTasks = async (req, res) => {
     try {
         const { page = 1, limit = 10, status, sort = 'createdAt', order = 'desc' } = req.query;
 
@@ -133,10 +152,13 @@ export const getTaskDetailsApi = async (req, res) => {
 export const updateTask = async (req, res) => {
     try {
         const taskId = Number(req.params.id);
-        if (!taskId) return res.status(400).json({ success: false, message: 'Invalid task id' });
-        const result = addTaskSchema.safeParse(req.body);
-        const data = result.data;
+        if (!taskId) return res.status(400).json({
+            success: false,
+            message: 'Invalid task id'
+        });
 
+        const data = req.body;
+      
         await updateTaskById({ taskId, userId: req.user.id, ...data });
         res.status(200).json({
             success: true,
