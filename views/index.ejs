@@ -159,7 +159,7 @@
       </main>
 
       <div id="voiceModal"
-        class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm transition-opacity duration-300 ease-in-out"
+        class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-[1px] transition-opacity duration-300 ease-in-out"
         onclick="if(event.target === this) closeVoiceModal()">
         <div
           class="bg-primary rounded-2xl shadow-xl w-full max-w-md p-6 space-y-4 relative text-center transform transition-transform duration-300"
@@ -199,7 +199,7 @@
 
       <!-- addd notes modal -->
       <div id="add-note-modal"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all">
+        class="fixed inset-0 bg-black/30 backdrop-blur-[1px] items-center justify-center p-4 hidden transition-all">
         <div
           class="bg-primary rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0">
           <!-- Modal Header -->
@@ -263,7 +263,7 @@
 
       <!-- edit note modal -->
       <div id="editNoteModal"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm items-center justify-center p-4 hidden transition-all">
+        class="fixed inset-0 bg-black/30 backdrop-blur-[1px] items-center justify-center p-4 hidden transition-all">
         <div class="bg-primary rounded-2xl shadow-2xl w-full max-w-lg">
 
           <div class="flex items-center justify-between p-5 border-b border-zinc-500/30">
@@ -314,7 +314,7 @@
 
       <!-- Note Detail Modal -->
       <div id="noteDetailModal"
-        class="fixed inset-0 bg-black/30 backdrop-blur-sm hidden items-center justify-center p-4  z-50">
+        class="fixed inset-0 bg-black/30 backdrop-blur-[1px] hidden items-center justify-center p-4  z-50">
         <div class="bg-primary rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
 
           <div class="flex justify-between items-center p-3 sm:p-6 border-b border-zinc-500/30">
@@ -370,7 +370,7 @@
 
       <!-- view all subtask details modal -->
       <div id="subtaskDetailsModal"
-        class="hidden fixed items-center justify-center inset-0 z-50 backdrop-blur-md bg-black/50">
+        class="hidden fixed items-center justify-center inset-0 z-50 backdrop-blur-[1px] bg-black/50">
         <div class="bg-primary p-6 rounded-xl shadow-2xl w-[480px]">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold">Subtask Details</h2>
@@ -384,7 +384,7 @@
       </div>
 
       <!-- delete modal -->
-      <div id="deleteModal" class="hidden fixed inset-0 z-50 backdrop-blur-md bg-black/50">
+      <div id="deleteModal" class="hidden fixed inset-0 z-50 backdrop-blur-[1px] bg-black/50">
         <div class="flex items-center justify-center min-h-screen px-4">
           <div class="bg-[var(--stat-bg)] p-6 rounded-xl shadow-2xl w-[480px]">
             <!-- Warning Icon -->
@@ -422,7 +422,7 @@
       </div>
 
       <!-- Edit Modal -->
-      <div id="editModal" class="hidden fixed bg-black/60 backdrop-blur-md inset-0 z-50 items-center justify-center">
+      <div id="editModal" class="hidden fixed bg-black/60 backdrop-blur-[1px] inset-0 z-50 items-center justify-center">
         <div
           class="bg-primary p-8 rounded-2xl max-h-[80vh] overflow-y-auto w-full max-w-md shadow-lg no-scrollbar backdrop-blur-[20px] animate-fade-in">
           <h3 class="text-2xl font-bold mb-6">Edit Your Task</h3>
@@ -490,7 +490,7 @@
       </div>
 
       <!-- Subtask Modal -->
-      <div id="subtaskModal" class="hidden backdrop-blur-md fixed bg-black/60 inset-0 z-40 items-center justify-center">
+      <div id="subtaskModal" class="hidden backdrop-blur-[1px] fixed bg-black/30 inset-0 z-40 items-center justify-center">
         <div class="bg-primary mx-3 p-3 sm:p-8 rounded-2xl w-full max-w-md shadow-lg animate-fade-in">
           <h3 class="text-2xl font-bold mb-6">Break Down Task</h3>
           <p id="parentTaskText"
@@ -523,7 +523,7 @@
 
       <!-- edit subtask modal -->
       <div id="editSubtaskModal"
-        class="backdrop-blur-md hidden fixed bg-black/60 inset-0 z-50 items-center justify-center">
+        class="backdrop-blur-[1px] hidden fixed bg-black/60 inset-0 z-50 items-center justify-center">
         <div class="bg-primary mx-3 p-4 sm:p-8 rounded-2xl w-full max-w-md shadow-lg animate-fade-in">
           <h3 class="text-2xl font-bold mb-6">Edit Subtask</h3>
           <textarea
@@ -545,7 +545,7 @@
 
       <!-- Task Details Modal -->
       <div id="taskDetailsModal"
-        class="hidden fixed bg-black/60 backdrop-blur-md inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
+        class="hidden fixed bg-black/60 backdrop-blur-[1px] inset-0 z-50 items-center justify-center p-4 overflow-y-auto">
         <div
           class="bg-card max-h-[600px] overflow-y-auto mx-auto p-5 sm:p-8 rounded-2xl w-full max-w-5xl shadow-lg backdrop-blur-[20px] transition-all duration-300 transform">
           <div class="flex justify-between items-center mb-6">

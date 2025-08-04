@@ -788,16 +788,17 @@ async function updateSubtaskFormElements(subtaskId) {
         const subtaskData = await res.json();
 
         if (!res.ok || !subtaskData.success) {
-            return showToast(subtaskdata?.message || "Failed to load subtask", "error");
+            return showToast(subtaskData?.message || "Failed to load subtask", "error");
         }
 
-        document.getElementById('editSubtaskInput').value = subtaskData.subtask.text;
+        document.getElementById('editSubtaskInput').value = subtaskData.subtask.text.trim();
         document.getElementById('editSubtaskInput').focus();
         document
             .getElementById("updateSubtaskForm")
             .addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const data = await updateSubTask(subtaskId);
+                if (!data) return;
                 if (!data.success) return showToast(data?.message, "error");
                 showToast(data?.message || "Subtask updated successfully", "success");
                 document.getElementById("updateSubtaskForm").reset();
@@ -816,7 +817,7 @@ async function updateSubTask(subtaskId) {
     const subTaskForm = document.getElementById("updateSubtaskForm");
     const formData = new FormData(subTaskForm);
     const payload = Object.fromEntries(formData);
-
+    if (!payload.text.trim()) return showToast("Subtask is required", 'error');
     try {
         spin.classList.remove("hidden");
         spin.classList.add("flex");
@@ -946,7 +947,7 @@ async function checkDueDates() {
                 alarmDateTime <= now
 
             ) {
-                showToast( `${task.title} is due now`, 'alarm')
+                showToast(`${task.title} is due now`, 'alarm')
                 if (task.repeat !== "none") {
                     // resetRepeatingTask(task);
                     console.log('asdfasdf');
